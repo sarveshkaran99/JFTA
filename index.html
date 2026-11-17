@@ -1,0 +1,2593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>JFTA | Jharkhand Film & Theatre Academy</title>
+  
+  <!-- PWA Manifest & iOS Meta Tags -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#f59e0b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="JFTA">
+  <link rel="apple-touch-icon" href="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=192&auto=format&fit=crop&q=80">
+
+  <!-- Google Fonts & FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-app: #080a0f;
+      --bg-surface: #10141d;
+      --bg-card: #151a26;
+      --bg-input: #1b2232;
+      --accent-gold: #f59e0b;
+      --accent-crimson: #dc2626;
+      --accent-glow: rgba(245, 158, 11, 0.25);
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-subtle: #6b7280;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --nav-height: 58px;
+      --bottom-bar-height: 64px;
+      --success: #10b981;
+      --danger: #ef4444;
+      --info: #38bdf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #030407;
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      touch-action: pan-y;
+    }
+
+    .mobile-screen {
+      width: 100%;
+      max-width: 440px;
+      min-height: 100vh;
+      background-color: var(--bg-app);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 50px rgba(0,0,0,0.85);
+      border-left: 1px solid rgba(255, 255, 255, 0.05);
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: calc(var(--bottom-bar-height) + 15px);
+    }
+
+    /* First Screen: Clean Google OAuth Gateway Modal */
+    .welcome-gateway-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.16) 0%, rgba(8, 10, 15, 0.96) 70%),
+                  url('https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=1200&auto=format&fit=crop&q=80') center/cover no-repeat;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: 5000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      transition: all 0.35s ease;
+    }
+    .welcome-gateway-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+      visibility: hidden;
+    }
+
+    .gateway-card {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(16, 20, 29, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--accent-gold);
+      border-radius: 24px;
+      padding: 2.2rem 1.6rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px var(--accent-glow);
+      position: relative;
+      overflow: hidden;
+    }
+    .gateway-card::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 100px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .gateway-logo-icon {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-crimson));
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #000;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .gateway-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.85rem;
+      margin-bottom: 0.25rem;
+      letter-spacing: -0.01em;
+    }
+    .gateway-sub {
+      color: var(--accent-gold);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.8rem;
+    }
+    .gateway-desc {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
+    }
+
+    .btn-google {
+      width: 100%;
+      background: #ffffff;
+      color: #1f2937;
+      border: none;
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      margin-bottom: 0.85rem;
+      transition: transform 0.15s ease;
+    }
+    .btn-google:active { transform: scale(0.98); }
+
+    .btn-superadmin-quick {
+      width: 100%;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      border-radius: 14px;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      margin-bottom: 0.8rem;
+      transition: background 0.2s ease;
+    }
+    .btn-superadmin-quick:hover { background: rgba(245, 158, 11, 0.25); }
+
+    .btn-guest {
+      width: 100%;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.8rem 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .btn-guest:hover { background: rgba(255,255,255,0.1); }
+
+    /* Clean Mobile App Header */
+    .app-header {
+      height: var(--nav-height);
+      background: rgba(16, 20, 29, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .app-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .app-logo span { color: var(--accent-gold); }
+    .header-icons { display: flex; align-items: center; gap: 0.7rem; }
+    .header-icon-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.15rem;
+      cursor: pointer;
+      position: relative;
+    }
+    .badge-alert {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      width: 8px;
+      height: 8px;
+      background: var(--accent-crimson);
+      border-radius: 50%;
+    }
+
+    /* User Profile Pill in Header */
+    .user-profile-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      padding: 0.25rem 0.55rem 0.25rem 0.35rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .user-profile-pill:active { background: rgba(255, 255, 255, 0.12); }
+    .user-avatar-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-gold), var(--accent-crimson));
+      color: #000;
+      font-weight: 800;
+      font-size: 0.72rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .user-role-badge-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 999px;
+    }
+    .badge-superadmin { background: var(--accent-gold); color: #000; }
+    .badge-admin { background: #38bdf8; color: #000; }
+    .badge-member { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .badge-public { background: rgba(255, 255, 255, 0.1); color: var(--text-muted); }
+
+    /* Public Membership Invitation Banner */
+    .public-invite-banner {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.12), rgba(16, 20, 29, 0.95));
+      border-bottom: 1px solid rgba(245, 158, 11, 0.25);
+      padding: 0.6rem 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+    }
+    .btn-apply-troupe {
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Refresh & Status Bar */
+    .refresh-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: rgba(245, 158, 11, 0.05);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.75rem;
+    }
+    .refresh-btn {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .refresh-btn i.spinning { animation: spin 0.8s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+
+    /* Stories Carousel */
+    .stories-tray {
+      padding: 0.85rem 0.75rem;
+      display: flex;
+      gap: 0.85rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-surface);
+    }
+    .stories-tray::-webkit-scrollbar { display: none; }
+    .story-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .story-ring {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      padding: 2.5px;
+      background: linear-gradient(45deg, var(--accent-gold), var(--accent-crimson), #3b82f6);
+      position: relative;
+    }
+    .story-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--bg-surface);
+    }
+    .story-name {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      width: 58px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* GPS Geofenced Check-in Card (Members Only) */
+    .gps-attendance-card {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(16, 20, 29, 0.95));
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 16px;
+      margin: 0.85rem;
+      padding: 1rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .gps-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.6rem;
+    }
+    .gps-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .gps-status-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+    }
+    .status-in-range { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+    .status-out-range { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+    
+    .distance-meter {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Feed Stream */
+    .feed-stream { display: flex; flex-direction: column; gap: 1rem; padding-top: 0.5rem; }
+    .mobile-post {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      animation: fadeInPost 0.3s ease;
+    }
+    @keyframes fadeInPost { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .post-author-row {
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .author-info-group { display: flex; align-items: center; gap: 0.65rem; }
+    .author-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid var(--accent-gold);
+    }
+    .author-title { font-size: 0.85rem; font-weight: 700; }
+    .author-tag { font-size: 0.7rem; color: var(--accent-gold); }
+
+    .post-media-box { width: 100%; position: relative; background: #000; overflow: hidden; }
+    .media-photo { width: 100%; height: auto; max-height: 480px; object-fit: cover; display: block; }
+    .double-tap-heart {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      color: #fff;
+      font-size: 5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: drop-shadow(0 0 20px rgba(225, 29, 72, 0.8));
+    }
+    .double-tap-heart.animate { transform: translate(-50%, -50%) scale(1.2); opacity: 0.95; }
+    .video-wrap { position: relative; padding-bottom: 56.25%; height: 0; }
+    .video-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+
+    .post-actions-row {
+      padding: 0.6rem 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .actions-left { display: flex; align-items: center; gap: 1.15rem; }
+    .action-icon {
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.35rem;
+      cursor: pointer;
+    }
+    .action-icon.liked { color: var(--accent-crimson); }
+    .whatsapp-share-btn { color: #25d366; font-size: 1.3rem; }
+
+    .post-caption-box { padding: 0 0.85rem 0.85rem 0.85rem; font-size: 0.85rem; }
+    .likes-tally { font-weight: 700; margin-bottom: 0.3rem; }
+    .caption-text span { font-weight: 700; margin-right: 0.3rem; }
+    .hashtags { color: #60a5fa; font-size: 0.8rem; margin-top: 0.25rem; }
+
+    /* ==========================================================================
+       REELS TAB & VERTICAL 9:16 FEED STYLES
+       ========================================================================== */
+    .reels-container {
+      display: none;
+      width: 100%;
+      height: calc(100vh - var(--nav-height) - var(--bottom-bar-height));
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      background: #000;
+      position: relative;
+    }
+    .reels-container::-webkit-scrollbar { display: none; }
+    .reels-container.active { display: block; }
+
+    .reel-item {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050608;
+      overflow: hidden;
+    }
+    .reel-video-element {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .reel-overlay-top {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 20;
+    }
+    .reel-top-badge {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .reel-create-pill-btn {
+      background: var(--accent-gold);
+      color: #000;
+      border: none;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      cursor: pointer;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    .reel-overlay-right {
+      position: absolute;
+      right: 12px;
+      bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      z-index: 20;
+    }
+    .reel-action-btn {
+      background: rgba(0,0,0,0.45);
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: transform 0.15s ease;
+    }
+    .reel-action-btn:active { transform: scale(0.9); }
+    .reel-action-btn.liked { color: var(--accent-crimson); }
+    .reel-action-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      margin-top: 0.2rem;
+      color: #fff;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+    }
+    .reel-overlay-bottom {
+      position: absolute;
+      bottom: 20px;
+      left: 15px;
+      right: 70px;
+      z-index: 20;
+      color: #fff;
+      text-shadow: 0 1px 5px rgba(0,0,0,0.9);
+    }
+    .reel-author-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .reel-author-name {
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+    .reel-wing-badge {
+      background: rgba(245, 158, 11, 0.3);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      font-size: 0.65rem;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+    .reel-caption {
+      font-size: 0.85rem;
+      line-height: 1.35;
+      margin-bottom: 0.45rem;
+    }
+    .reel-audio-track {
+      font-size: 0.72rem;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .reel-duration-badge {
+      background: rgba(0,0,0,0.65);
+      border: 1px solid rgba(255,255,255,0.2);
+      font-size: 0.65rem;
+      padding: 0.15rem 0.45rem;
+      border-radius: 6px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Client-side Video Compression Progress Modal */
+    .compression-banner {
+      background: rgba(16, 20, 29, 0.95);
+      border: 1px solid var(--accent-gold);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .compression-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 0.6rem 0;
+    }
+    .compression-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent-gold), var(--success));
+      border-radius: 999px;
+      transition: width 0.15s ease;
+    }
+
+    /* Modals & Slide Drawers */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1999;
+      display: none;
+    }
+    .sheet-overlay.show { display: block; }
+
+    .slide-drawer {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg-surface);
+      z-index: 2000;
+      box-shadow: 0 -10px 40px rgba(0,0,0,0.8);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .bottom-sheet {
+      bottom: 0;
+      transform: translateX(-50%) translateY(105%);
+      border-top: 2px solid var(--accent-gold);
+      border-radius: 20px 20px 0 0;
+      padding: 1.25rem;
+      max-height: 88vh;
+      overflow-y: auto;
+    }
+    .bottom-sheet.open { transform: translateX(-50%) translateY(0); }
+
+    .top-sheet {
+      top: 0;
+      transform: translateX(-50%) translateY(-105%);
+      border-bottom: 2px solid #3b82f6;
+      border-radius: 0 0 20px 20px;
+      padding: 1.25rem;
+      height: 88vh;
+      overflow-y: auto;
+    }
+    .top-sheet.open { transform: translateX(-50%) translateY(0); }
+
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.6rem;
+    }
+
+    /* Fixed Bottom Tab Bar */
+    .mobile-tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 440px;
+      height: var(--bottom-bar-height);
+      background: rgba(16, 20, 29, 0.96);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 1001;
+      padding-bottom: env(safe-area-inset-bottom, 5px);
+    }
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      color: var(--text-subtle);
+      font-size: 0.65rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      height: 100%;
+      transition: color 0.15s ease;
+    }
+    .tab-item.active { color: var(--accent-gold); font-weight: 700; }
+    .tab-post-pill {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-gold);
+      color: #000;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 0.7rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-gold { background: var(--accent-gold); color: #000; }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+    .comment-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      font-family: inherit;
+    }
+    .role-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .role-btn.active {
+      background: var(--accent-gold);
+      color: #000;
+      border-color: var(--accent-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       FIRST SCREEN: GOOGLE AUTHENTICATION GATEWAY
+       ========================================================================== -->
+  <div class="welcome-gateway-overlay" id="gateway-screen">
+    <div class="gateway-card">
+      <div class="gateway-logo-icon">
+        <i class="fas fa-film"></i>
+      </div>
+
+      <h2 class="gateway-title">JFTA</h2>
+      <div class="gateway-sub">Jharkhand Film & Theatre Academy</div>
+      <p class="gateway-desc">
+        Ranchi's premiere cinema and stage collective. Please sign in with your Google account to explore productions, watch 1-minute reels, or access troupe backstage tools.
+      </p>
+
+      <!-- 1-Tap Quick Sign-In for Super Admin -->
+      <button class="btn-superadmin-quick" onclick="signInWithEmail('sarveshkaran99@gmail.com', 'Sarvesh Karan')">
+        <i class="fas fa-shield-alt"></i> Sign in as Sarvesh Karan (Super Admin)
+      </button>
+
+      <!-- Standard Google OAuth Trigger -->
+      <button class="btn-google" onclick="openCustomGoogleAuth()">
+        <svg width="18" height="18" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        </svg>
+        Sign in with another Google Account
+      </button>
+
+      <!-- Custom Email Input (Hidden by default, shown when choosing custom) -->
+      <div id="custom-google-box" style="display: none; margin-top: 0.8rem; text-align: left;">
+        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Google Email Address:</label>
+        <div style="display: flex; gap: 0.4rem;">
+          <input type="email" id="custom-google-email" placeholder="e.g. audience.fan@gmail.com" class="comment-input" style="flex: 1; border-radius: 10px; padding: 0.55rem; font-size: 0.8rem;">
+          <button class="role-btn active" style="padding: 0 0.8rem;" onclick="submitCustomGoogleAuth()">Sign In</button>
+        </div>
+      </div>
+
+      <div style="font-size: 0.72rem; color: var(--text-subtle); margin-top: 1rem;">
+        <i class="fas fa-lock"></i> Strict Role-Based Access Control verified by JFTA Academy
+      </div>
+    </div>
+  </div>
+
+  <main class="mobile-screen">
+
+    <!-- JFTA MOBILE APP HEADER (Clean, Native Mobile Look) -->
+    <header class="app-header">
+      <div class="app-logo">
+        <span style="color: var(--accent-gold); font-weight: 800;">JFTA</span>
+        <span style="font-size: 0.85rem; font-family: 'Plus Jakarta Sans', sans-serif; color: var(--text-muted); font-weight: 500;">
+          | Film & Theatre
+        </span>
+      </div>
+
+      <div class="header-icons">
+        <button class="role-btn active" id="pwa-install-btn" style="display: none; padding: 0.25rem 0.6rem; font-size: 0.7rem;" onclick="triggerPwaInstall()">
+          <i class="fas fa-download"></i> Install
+        </button>
+
+        <!-- Private JFTA Treasury / Dues Bell (Members & Admins Only) -->
+        <button class="header-icon-btn" onclick="openMemberFeeDrawer()" id="header-bell-btn" style="display: none;" title="Private Dues & Alerts">
+          <i class="far fa-bell"></i>
+          <span class="badge-alert"></span>
+        </button>
+
+        <!-- Admin Desk Shield Button (Exclusively for Admins & Super Admin) -->
+        <button class="header-icon-btn" onclick="openAdminDesk()" id="header-admin-btn" style="display: none; color: #38bdf8;" title="Admin Command Desk">
+          <i class="fas fa-shield-alt"></i>
+          <span class="badge-alert" id="admin-badge-indicator" style="display: none;"></span>
+        </button>
+
+        <!-- User Profile Pill -->
+        <div class="user-profile-pill" onclick="openProfileDrawer()" id="user-profile-btn" title="View Account & Access Level">
+          <div class="user-avatar-circle" id="user-header-avatar">SK</div>
+          <span class="user-role-badge-pill badge-superadmin" id="user-header-badge">Super Admin</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- TOP CREATOR CREDIT BAR -->
+    <div style="background: linear-gradient(90deg, #0e131f, #1e2638, #0e131f); border-bottom: 1px solid rgba(245, 158, 11, 0.25); padding: 0.35rem 0.8rem; display: flex; align-items: center; justify-content: center; gap: 0.45rem; font-size: 0.72rem; color: #cbd5e1; letter-spacing: 0.02em;">
+      <i class="fas fa-sparkles" style="color: var(--accent-gold); font-size: 0.7rem;"></i>
+      <span>Crafted by <strong style="color: var(--accent-gold); font-weight: 800;">Sarvesh Karan</strong></span>
+      <span style="color: rgba(255,255,255,0.2);">&bull;</span>
+      <span style="font-size: 0.68rem; color: #94a3b8;">JFTA Academy</span>
+    </div>
+
+    <!-- PUBLIC MEMBERSHIP INVITATION BANNER (Visible only to Public Visitors) -->
+    <div class="public-invite-banner" id="public-invite-banner" style="display: none;">
+      <div>
+        <strong style="color: var(--accent-gold);">Audience Mode:</strong> Read-only access
+        <div style="font-size: 0.68rem; color: var(--text-muted);">JFTA student or stage artist? Request troupe access.</div>
+      </div>
+      <button class="btn-apply-troupe" onclick="openOnboardingSheet()">
+        <i class="fas fa-id-card"></i> Join Troupe
+      </button>
+    </div>
+
+    <!-- LIVE FEED VIEW CONTAINER -->
+    <div id="view-feed-section">
+
+      <!-- PULL-TO-REFRESH / SYNC BAR -->
+      <div class="refresh-bar">
+        <span style="color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
+          <i class="fas fa-stream" style="color: var(--accent-gold);"></i> Troupe Production Stream
+        </span>
+        <button class="refresh-btn" id="feed-refresh-btn" onclick="refreshFeed()">
+          <i class="fas fa-sync-alt" id="refresh-icon"></i>
+          <span id="refresh-text">Refresh Feed</span>
+        </button>
+      </div>
+
+      <!-- JFTA STORIES TRAY (Film & Theatre Shoots) -->
+      <div class="stories-tray">
+        <div class="story-item" onclick="alert('JFTA Call Sheet: Morning 6:30 AM shoot at Morabadi Audrey House!')">
+          <div class="story-ring active-pulse">
+            <img src="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=100&auto=format&fit=crop&q=80" class="story-img" alt="Film Shoot">
+          </div>
+          <span class="story-name">Film Shoot</span>
+        </div>
+
+        <div class="story-item" onclick="alert('Stage Drama: Dress rehearsals for Birsa Munda stage play.')">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?w=100&auto=format&fit=crop&q=80" class="story-img" alt="Stage Play">
+          </div>
+          <span class="story-name">Stage Play</span>
+        </div>
+
+        <div class="story-item" onclick="alert('Nukkad Natak: Street theatre festival team call at Albert Ekka Chowk!')">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=100&auto=format&fit=crop&q=80" class="story-img" alt="Street Play">
+          </div>
+          <span class="story-name">Street Play</span>
+        </div>
+
+        <div class="story-item" onclick="alert('Screenwriting Workshop: Script read-through for Jharkhand short film festival!')">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=100&auto=format&fit=crop&q=80" class="story-img" alt="Cinema Workshop">
+          </div>
+          <span class="story-name">Workshop</span>
+        </div>
+      </div>
+
+      <!-- GPS GEOFENCED REHEARSAL & SHOOT CHECK-IN (Members & Admins Only) -->
+      <section class="gps-attendance-card" id="gps-checkin-section" style="display: none;">
+        <div class="gps-header">
+          <span class="gps-title"><i class="fas fa-map-marker-alt"></i> JFTA Studio GPS Check-in</span>
+          <span class="gps-status-pill status-in-range" id="geofence-pill">In Studio Range (8m)</span>
+        </div>
+
+        <div class="distance-meter">
+          <span>Venue: <strong>JFTA Studio, Ranchi</strong></span>
+          <span id="distance-text">Distance: <strong>8 meters</strong></span>
+        </div>
+
+        <button class="btn-action btn-gold" id="attendance-submit-btn" onclick="markAttendance()">
+          <i class="fas fa-fingerprint"></i> Mark Film & Stage Attendance
+        </button>
+
+        <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem;">
+          <button class="role-btn" style="flex: 1; font-size: 0.65rem;" onclick="simulateGps('near')">
+            At JFTA Studio (8m)
+          </button>
+          <button class="role-btn" style="flex: 1; font-size: 0.65rem;" onclick="simulateGps('far')">
+            At Home (3.1km)
+          </button>
+        </div>
+      </section>
+
+      <!-- JFTA FEED STREAM (Reverse Chronological Feed) -->
+      <section class="feed-stream" id="mobile-feed">
+
+        <!-- Post 1: Film Production Still -->
+        <article class="mobile-post" id="post-m-1">
+          <div class="post-author-row">
+            <div class="author-info-group">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="author-avatar" alt="Ananya">
+              <div>
+                <div class="author-title">Ananya Roy</div>
+                <div class="author-tag"><i class="fas fa-video"></i> JFTA Film Wing &bull; Cinematographer</div>
+              </div>
+            </div>
+            <button class="btn-danger admin-delete-btn" style="display: none; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem;" onclick="deletePost('post-m-1')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+
+          <div class="post-media-box" ondblclick="triggerDoubleTap(this)">
+            <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=900&auto=format&fit=crop&q=80" class="media-photo" alt="Film Camera Rig">
+            <i class="fas fa-heart double-tap-heart"></i>
+          </div>
+
+          <div class="post-actions-row">
+            <div class="actions-left">
+              <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+              <button class="action-icon" onclick="openCommentModal('Ananya Roy: Day 2 Wrap')"><i class="far fa-comment"></i></button>
+              <a href="https://api.whatsapp.com/send?text=Check%20out%20JFTA's%20latest%20film%20production%20in%20Ranchi!" target="_blank" class="action-icon whatsapp-share-btn">
+                <i class="fab fa-whatsapp"></i>
+              </a>
+            </div>
+            <button class="action-icon"><i class="far fa-bookmark"></i></button>
+          </div>
+
+          <div class="post-caption-box">
+            <div class="likes-tally"><span class="like-number">64</span> likes</div>
+            <div class="caption-text"><span>ananyaroy</span> That's a wrap on Day 2 of our short film project <em>"Mati Ke Rang"</em>! Sunrise lighting at Morabadi was cinematic gold.</div>
+            <div class="hashtags">#JFTA #RanchiFilm #Cinematography #JharkhandCinema</div>
+          </div>
+        </article>
+
+        <!-- Post 2: Stage Drama Still -->
+        <article class="mobile-post" id="post-m-2">
+          <div class="post-author-row">
+            <div class="author-info-group">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="author-avatar" alt="Rohan">
+              <div>
+                <div class="author-title">Rohan Sengupta</div>
+                <div class="author-tag"><i class="fas fa-theater-masks"></i> JFTA Theatre Repertory &bull; Director</div>
+              </div>
+            </div>
+            <button class="btn-danger admin-delete-btn" style="display: none; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem;" onclick="deletePost('post-m-2')">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+
+          <div class="post-media-box" ondblclick="triggerDoubleTap(this)">
+            <img src="https://images.unsplash.com/photo-1469488865564-c2de10f69f96?w=900&auto=format&fit=crop&q=80" class="media-photo" alt="Theatre Still">
+            <i class="fas fa-heart double-tap-heart"></i>
+          </div>
+
+          <div class="post-actions-row">
+            <div class="actions-left">
+              <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+              <button class="action-icon" onclick="openCommentModal('Rohan: Stage Blocking')"><i class="far fa-comment"></i></button>
+              <a href="https://api.whatsapp.com/send?text=Watch%20JFTA%20Theatre%20Academy%20updates!" target="_blank" class="action-icon whatsapp-share-btn"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <button class="action-icon"><i class="far fa-bookmark"></i></button>
+          </div>
+
+          <div class="post-caption-box">
+            <div class="likes-tally"><span class="like-number">89</span> likes</div>
+            <div class="caption-text"><span>rohan_jfta</span> Stage blocking and voice modulation rehearsals complete for our upcoming Ranchi auditorium showcase.</div>
+            <div class="hashtags">#TheatreLife #RanchiArt #Natak #JFTAPerformance</div>
+          </div>
+        </article>
+
+        <!-- Post 3: YouTube Festival Teaser -->
+        <article class="mobile-post" id="post-m-3">
+          <div class="post-author-row">
+            <div class="author-info-group">
+              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" class="author-avatar" alt="Priya">
+              <div>
+                <div class="author-title">Priya Tirkey</div>
+                <div class="author-tag"><i class="fas fa-film"></i> Screenwriter &bull; JFTA Faculty</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="video-wrap">
+            <iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?controls=1" title="JFTA Festival Trailer" allowfullscreen></iframe>
+          </div>
+
+          <div class="post-actions-row">
+            <div class="actions-left">
+              <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+              <a href="https://api.whatsapp.com/send?text=Watch%20JFTA's%20film%20festival%20teaser!" target="_blank" class="action-icon whatsapp-share-btn"><i class="fab fa-whatsapp"></i></a>
+            </div>
+          </div>
+
+          <div class="post-caption-box">
+            <div class="likes-tally"><span class="like-number">124</span> likes</div>
+            <div class="caption-text"><span>priyatirkey</span> Official teaser for our annual student film festival. Streaming via YouTube to ensure ₹0 bandwidth load on academy servers!</div>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- Sleek Production Footer with Developer Credit & Copyright -->
+      <footer class="app-footer" style="padding: 1.8rem 1rem 2.2rem; text-align: center; border-top: 1px solid var(--border-color); margin-top: 1.5rem; background: rgba(16, 20, 29, 0.75);">
+        <div style="font-size: 0.88rem; font-weight: 700; color: #fff; margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: center; gap: 0.45rem;">
+          <i class="fas fa-code" style="color: var(--accent-gold);"></i> Crafted by <span style="color: var(--accent-gold); font-weight: 800;">Sarvesh Karan</span>
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+          Jharkhand Film &amp; Theatre Academy (JFTA) &bull; Ranchi, India
+        </div>
+        <div style="font-size: 0.7rem; color: #cbd5e1; font-weight: 600;">
+          &copy; 2026 JFTA. Designed &amp; Developed by Sarvesh Karan. All Rights Reserved.
+        </div>
+      </footer>
+    </div>
+
+    <!-- ==========================================================================
+         REELS VERTICAL FEED SECTION (9:16 Full Screen Vertical Video Scroll)
+         ========================================================================== -->
+    <div class="reels-container" id="view-reels-section">
+
+      <!-- Reel 1: Monologue Rehearsal -->
+      <div class="reel-item" id="reel-item-1">
+        <video class="reel-video-element" loop playsinline autoplay muted poster="https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=800&auto=format&fit=crop&q=80">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-actor-in-the-theatre-under-the-spotlight-40916-large.mp4" type="video/mp4">
+        </video>
+
+        <div class="reel-overlay-top">
+          <div class="reel-top-badge">
+            <i class="fas fa-film"></i> JFTA Reels
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="reel-duration-badge"><i class="fas fa-stopwatch"></i> 0:42 / max 1:00</span>
+            <button class="reel-create-pill-btn" onclick="openReelCreator()">
+              <i class="fas fa-plus"></i> Post Reel
+            </button>
+          </div>
+        </div>
+
+        <div class="reel-overlay-right">
+          <button class="reel-action-btn" onclick="toggleReelLike(this)">
+            <i class="fas fa-heart"></i>
+            <span class="reel-action-label like-count">318</span>
+          </button>
+          <button class="reel-action-btn" onclick="openCommentModal('Birsa Munda Monologue Reel')">
+            <i class="fas fa-comment-dots"></i>
+            <span class="reel-action-label">42</span>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Watch%20this%20stunning%20JFTA%20monologue%20reel%20from%20Ranchi!" target="_blank" class="reel-action-btn" style="text-decoration: none; color: #25d366;">
+            <i class="fab fa-whatsapp"></i>
+            <span class="reel-action-label" style="color: #fff;">Share</span>
+          </a>
+          <button class="reel-action-btn" onclick="toggleReelAudio(this)">
+            <i class="fas fa-volume-mute"></i>
+            <span class="reel-action-label">Sound</span>
+          </button>
+        </div>
+
+        <div class="reel-overlay-bottom">
+          <div class="reel-author-tag">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 0.75rem;">RS</div>
+            <span class="reel-author-name">Rohan Sengupta</span>
+            <span class="reel-wing-badge">Theatre Wing</span>
+          </div>
+          <div class="reel-caption">
+            Raw monologue take 4: Working on vocal projection and breathing exercises inside JFTA Ranchi main hall.
+          </div>
+          <div class="reel-audio-track">
+            <i class="fas fa-music"></i> <span>Original Audio &bull; JFTA Repertoire Acoustics</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reel 2: Cinema Lighting & Camera Rig Test -->
+      <div class="reel-item" id="reel-item-2">
+        <video class="reel-video-element" loop playsinline muted poster="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&auto=format&fit=crop&q=80">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-cameraman-focusing-a-camera-41123-large.mp4" type="video/mp4">
+        </video>
+
+        <div class="reel-overlay-top">
+          <div class="reel-top-badge">
+            <i class="fas fa-video"></i> JFTA Cinema
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="reel-duration-badge"><i class="fas fa-stopwatch"></i> 0:54 / max 1:00</span>
+            <button class="reel-create-pill-btn" onclick="openReelCreator()">
+              <i class="fas fa-plus"></i> Post Reel
+            </button>
+          </div>
+        </div>
+
+        <div class="reel-overlay-right">
+          <button class="reel-action-btn" onclick="toggleReelLike(this)">
+            <i class="fas fa-heart"></i>
+            <span class="reel-action-label like-count">482</span>
+          </button>
+          <button class="reel-action-btn" onclick="openCommentModal('Cinematography Rig Test')">
+            <i class="fas fa-comment-dots"></i>
+            <span class="reel-action-label">58</span>
+          </button>
+          <a href="https://api.whatsapp.com/send?text=Check%20out%20JFTA%20Cinematography%20Reel!" target="_blank" class="reel-action-btn" style="text-decoration: none; color: #25d366;">
+            <i class="fab fa-whatsapp"></i>
+            <span class="reel-action-label" style="color: #fff;">Share</span>
+          </a>
+          <button class="reel-action-btn" onclick="toggleReelAudio(this)">
+            <i class="fas fa-volume-mute"></i>
+            <span class="reel-action-label">Sound</span>
+          </button>
+        </div>
+
+        <div class="reel-overlay-bottom">
+          <div class="reel-author-tag">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 0.75rem;">AR</div>
+            <span class="reel-author-name">Ananya Roy</span>
+            <span class="reel-wing-badge" style="border-color: #38bdf8; color: #38bdf8;">Film Wing</span>
+          </div>
+          <div class="reel-caption">
+            Gimbal test at 60fps golden hour in Morabadi grounds. Compressed client-side before publishing!
+          </div>
+          <div class="reel-audio-track">
+            <i class="fas fa-music"></i> <span>Jharkhand Folk Rhythm Beats (Ambient)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="sheet-overlay" id="sheet-overlay" onclick="closeAllDrawers()"></div>
+
+    <!-- USER ACCOUNT / PROFILE DRAWER -->
+    <div class="slide-drawer bottom-sheet" id="profile-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;">
+          <i class="fas fa-user-circle"></i> JFTA Account Profile
+        </h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <div style="background: var(--bg-card); padding: 1.2rem; border-radius: 16px; margin-bottom: 1.2rem; border: 1px solid var(--border-color); text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-gold), var(--accent-crimson)); margin: 0 auto 0.7rem auto; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: #000;" id="drawer-avatar">
+          SK
+        </div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 0.2rem;" id="drawer-user-name">Sarvesh Karan</h3>
+        <p style="font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 0.6rem;" id="drawer-user-email">sarveshkaran99@gmail.com</p>
+        <span class="user-role-badge-pill badge-superadmin" id="drawer-role-badge" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;">
+          Super Admin & Founder
+        </span>
+      </div>
+
+      <!-- Action Buttons in Profile -->
+      <div id="drawer-public-actions" style="display: none; margin-bottom: 1rem;">
+        <button class="btn-action btn-gold" onclick="openOnboardingSheet()">
+          <i class="fas fa-id-card"></i> Submit Troupe Membership Application
+        </button>
+      </div>
+
+      <button class="btn-action btn-danger" onclick="signOutCurrentUser()">
+        <i class="fas fa-sign-out-alt"></i> Sign Out / Switch Google Account
+      </button>
+    </div>
+
+    <!-- ONBOARDING REGISTRATION SHEET FOR APPLICANTS -->
+    <div class="onboarding-sheet" id="onboarding-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;">
+          <i class="fas fa-id-card"></i> JFTA Member Verification Request
+        </h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1rem;">
+        To unlock backstage production feed posting, 1-minute reels, and GPS studio check-in, submit your troupe details for admin approval.
+      </p>
+
+      <div style="margin-bottom: 0.8rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Selected Wing:</label>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="role-btn active" style="flex: 1; padding: 0.5rem;" id="wing-film" onclick="selectWing('film')">
+            <i class="fas fa-video"></i> Film & Cinema Wing
+          </button>
+          <button class="role-btn" style="flex: 1; padding: 0.5rem;" id="wing-theatre" onclick="selectWing('theatre')">
+            <i class="fas fa-theater-masks"></i> Theatre Repertory
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 0.8rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Your Core Discipline / Role:</label>
+        <input type="text" id="member-discipline" placeholder="e.g. Actor / Cinematographer / Stage Crew" class="comment-input" style="width: 100%; border-radius: 10px; padding: 0.6rem;">
+      </div>
+
+      <div style="margin-bottom: 1.2rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">JFTA Batch / Roll No. (Optional):</label>
+        <input type="text" id="member-batch" placeholder="e.g. Batch 2026 / NSD Alum" class="comment-input" style="width: 100%; border-radius: 10px; padding: 0.6rem;">
+      </div>
+
+      <button class="btn-action btn-gold" onclick="submitMembershipRequest()">
+        <i class="fas fa-paper-plane"></i> Submit Request to Admin
+      </button>
+    </div>
+
+    <!-- ==========================================================================
+         REEL CREATOR & OPTIMIZER SHEET (Members Only, Max 1 Min, Client Compression)
+         ========================================================================== -->
+    <div class="slide-drawer bottom-sheet" id="reel-creator-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;">
+          <i class="fas fa-film"></i> JFTA Reel Creator & Video Compressor
+        </h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-gold); border-radius: 12px; padding: 0.75rem; margin-bottom: 0.85rem; font-size: 0.75rem;">
+        <i class="fas fa-info-circle" style="color: var(--accent-gold);"></i> 
+        <strong>Troupe Guidelines:</strong> Maximum duration is <strong>1 minute (60s)</strong>. Videos are auto-transcoded & compressed on your device before uploading to save 85%+ database & cloud bandwidth.
+      </div>
+
+      <!-- File Picker -->
+      <div style="margin-bottom: 0.85rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+          Select Reel Video (9:16 Vertical, MP4/WebM):
+        </label>
+        <input type="file" id="reel-video-file" accept="video/*" class="comment-input" style="width: 100%; border-radius: 10px; padding: 0.6rem; font-size: 0.75rem;" onchange="handleReelFileSelected(this)">
+      </div>
+
+      <!-- Live Compression Meter -->
+      <div class="compression-banner" id="compression-banner">
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700;">
+          <span style="color: var(--accent-gold);"><i class="fas fa-compress-arrows-alt"></i> Client-Side Transcoder</span>
+          <span id="compression-percent" style="color: var(--success);">0%</span>
+        </div>
+        <div class="compression-progress-track">
+          <div class="compression-progress-bar" id="compression-bar"></div>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted);" id="compression-stats">
+          <span>Detecting video stream...</span>
+          <span>Target: 720x1280 (30fps)</span>
+        </div>
+      </div>
+
+      <!-- Caption with Strict Anti-Abuse Filter -->
+      <div style="margin-bottom: 0.85rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+          Reel Caption & Hashtags:
+        </label>
+        <textarea id="reel-caption-input" placeholder="e.g. Stage blocking rehearsal at JFTA Ranchi studio... #TheatreLife" class="comment-input" style="width: 100%; height: 70px; border-radius: 10px; padding: 0.6rem; font-size: 0.8rem;"></textarea>
+      </div>
+
+      <!-- Category Select -->
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">Category Wing:</label>
+        <select id="reel-category" class="comment-input" style="width: 100%; border-radius: 10px; padding: 0.6rem; font-size: 0.8rem;">
+          <option value="Film Wing">Film & Cinema Wing</option>
+          <option value="Theatre Wing">Theatre Repertory</option>
+          <option value="Monologue">Monologue & Character Study</option>
+          <option value="Nukkad Natak">Street Play / Nukkad Natak</option>
+          <option value="Music & Acoustics">Troupe Music & Voice Modulation</option>
+        </select>
+      </div>
+
+      <button class="btn-action btn-gold" id="btn-publish-reel" onclick="submitNewReel()">
+        <i class="fas fa-cloud-upload-alt"></i> Transcode & Post Reel to JFTA
+      </button>
+    </div>
+
+    <!-- COMMENTS DRAWER WITH PROFANITY / TAMPERING SHIELD -->
+    <div class="slide-drawer bottom-sheet" id="comments-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;">
+          <i class="far fa-comments"></i> Production Comments & Critiques
+        </h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.85rem;" id="comment-context-title">
+        Comments on Production
+      </div>
+
+      <!-- Comment Stream -->
+      <div id="comment-list" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 220px; overflow-y: auto; margin-bottom: 1rem;">
+        <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; font-size: 0.8rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+            <strong style="color: var(--accent-gold);">Rohan Sengupta</strong>
+            <span style="font-size: 0.68rem; color: var(--text-subtle);">10m ago</span>
+          </div>
+          <div>Incredible depth of field in that sunrise frame! Perfect color grade.</div>
+        </div>
+
+        <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; font-size: 0.8rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+            <strong style="color: #60a5fa;">Priya Tirkey</strong>
+            <span style="font-size: 0.68rem; color: var(--text-subtle);">1h ago</span>
+          </div>
+          <div>The emotional beats in Scene 3 are going to hit so hard in the theater!</div>
+        </div>
+      </div>
+
+      <!-- Comment Submission Form -->
+      <div style="display: flex; gap: 0.4rem;">
+        <input type="text" id="comment-input-field" placeholder="Add verified critique..." class="comment-input" style="flex: 1; border-radius: 10px; padding: 0.6rem; font-size: 0.8rem;">
+        <button class="role-btn active" style="padding: 0 0.85rem;" onclick="postComment()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+      <div style="font-size: 0.68rem; color: var(--text-subtle); margin-top: 0.4rem;">
+        <i class="fas fa-shield-alt"></i> Protected with automated profanity check & anti-abuse validation.
+      </div>
+    </div>
+
+    <!-- JFTA TREASURY & DUES DRAWER (Members & Admins Only) -->
+    <div class="slide-drawer bottom-sheet" id="member-fee-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;">
+          <i class="fas fa-wallet"></i> JFTA Academy Dues & Treasury
+        </h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <div style="background: var(--bg-card); padding: 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid var(--border-color);">
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.4rem;">
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Monthly Studio & Rehearsal Dues</span>
+          <span style="font-size: 1.2rem; font-weight: 800; color: var(--accent-gold);">₹19.00</span>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-subtle);">Month: November 2026 &bull; Status: <strong style="color: #f59e0b;" id="dues-status-label">PENDING</strong></p>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+          Direct UPI Transfer (0% Gateway Commission — 100% to JFTA Production Fund)
+        </p>
+
+        <div style="background: #fff; padding: 0.8rem; display: inline-block; border-radius: 12px; margin-bottom: 0.8rem;">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi%3A%2F%2Fpay%3Fpa%3Djfta.ranchi%40upi%26pn%3DJharkhandFilmAndTheatreAcademy%26am%3D19%26cu%3DINR" width="140" height="140" alt="UPI QR">
+        </div>
+        <div style="font-size: 0.72rem; color: var(--text-subtle);">UPI ID: <strong>jfta.ranchi@upi</strong></div>
+      </div>
+
+      <a href="upi://pay?pa=jfta.ranchi@upi&pn=JFTA_Ranchi&am=19&cu=INR" class="btn-action btn-gold" onclick="markDuesPaid()" style="text-decoration: none; margin-bottom: 0.5rem;">
+        <i class="fas fa-mobile-alt"></i> Pay ₹19 via GPay / PhonePe / Paytm
+      </a>
+      <button class="role-btn" style="width: 100%; padding: 0.5rem;" onclick="markDuesPaid()">
+        Simulate: Mark Dues as Paid ✅
+      </button>
+    </div>
+
+    <!-- ==========================================================================
+         JFTA ADMIN COMMAND DESK (EXCLUSIVELY FOR SUPER ADMIN & CO-ADMINS)
+         ========================================================================== -->
+    <div class="slide-drawer top-sheet" id="admin-drawer">
+      <div class="sheet-header">
+        <h4 style="color: #38bdf8; font-size: 1rem;"><i class="fas fa-user-shield"></i> JFTA Command Desk</h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+
+      <!-- Navigation Tabs in Admin Desk -->
+      <div style="display: flex; gap: 0.35rem; margin-bottom: 1rem; overflow-x: auto; padding-bottom: 0.3rem;">
+        <button class="role-btn active" id="atab-approvals" onclick="switchAdminTab('approvals')">
+          Approvals <span class="badge-alert" id="tab-badge-approvals" style="position: static; display: inline-block; width: 6px; height: 6px; margin-left: 3px;"></span>
+        </button>
+        <button class="role-btn" id="atab-admins" onclick="switchAdminTab('admins')">Admins (3-4)</button>
+        <button class="role-btn" id="atab-roster" onclick="switchAdminTab('roster')">Troupe Roster</button>
+        <button class="role-btn" id="atab-attendance" onclick="switchAdminTab('attendance')">GPS Roll Call</button>
+        <button class="role-btn" id="atab-dues" onclick="switchAdminTab('dues')">Dues Tracker</button>
+      </div>
+
+      <!-- Section 1: Member Approvals Queue -->
+      <div id="admin-sec-approvals">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+          <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">Pending Troupe Applicants:</span>
+          <span style="font-size: 0.72rem; color: var(--text-muted);" id="pending-count-text">1 Request</span>
+        </div>
+
+        <div id="applicant-queue-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+          <!-- Dynamically populated or default applicant -->
+        </div>
+      </div>
+
+      <!-- Section 2: Manage Co-Admins (Super Admin Only) -->
+      <div id="admin-sec-admins" style="display: none;">
+        <div style="background: rgba(56, 189, 248, 0.1); border: 1px solid #38bdf8; border-radius: 12px; padding: 0.75rem; margin-bottom: 0.85rem; font-size: 0.75rem;">
+          <i class="fas fa-crown" style="color: var(--accent-gold);"></i> 
+          <strong>Super Admin Access:</strong> You (<span style="color:#fff;">sarveshkaran99@gmail.com</span>) can authorize 3 to 4 co-administrators to help manage JFTA approvals and content moderation.
+        </div>
+
+        <!-- Add Co-Admin Form (Visible to Super Admin) -->
+        <div id="superadmin-add-admin-box" style="margin-bottom: 1rem;">
+          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+            Add Co-Admin Google Email:
+          </label>
+          <div style="display: flex; gap: 0.4rem;">
+            <input type="email" id="new-admin-email" placeholder="e.g. director.ranchi@gmail.com" class="comment-input" style="flex: 1; border-radius: 10px; padding: 0.55rem; font-size: 0.78rem;">
+            <button class="role-btn active" style="padding: 0 0.85rem; font-size: 0.75rem;" onclick="addCoAdmin()">
+              <i class="fas fa-user-plus"></i> Add Admin
+            </button>
+          </div>
+        </div>
+
+        <h5 style="font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 0.5rem;">Current Authorized Administrators:</h5>
+        <div id="admin-list-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Section 3: Troupe Roster -->
+      <div id="admin-sec-roster" style="display: none;">
+        <h5 style="font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 0.5rem;">Approved Troupe Members:</h5>
+        <div id="troupe-roster-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem;">
+              <strong>Ananya Roy</strong> (ananya@jfta.in)
+              <div style="font-size: 0.68rem; color: var(--accent-gold);">Cinematographer &bull; Film Wing</div>
+            </div>
+            <button class="btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="revokeMember('ananya@jfta.in', this)">Revoke</button>
+          </div>
+
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem;">
+              <strong>Rohan Sengupta</strong> (rohan@jfta.in)
+              <div style="font-size: 0.68rem; color: var(--accent-gold);">Director &bull; Theatre Wing</div>
+            </div>
+            <button class="btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="revokeMember('rohan@jfta.in', this)">Revoke</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: GPS Attendance -->
+      <div id="admin-sec-attendance" style="display: none;">
+        <h5 style="font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 0.5rem;">Today's Rehearsal Roll Call (Ranchi Studio):</h5>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; font-size: 0.78rem; display: flex; justify-content: space-between;">
+            <div><strong>Ananya Roy</strong> &bull; Checked in at 6:45 AM</div>
+            <span style="color: var(--success); font-size: 0.7rem;"><i class="fas fa-check"></i> 8m GPS Verified</span>
+          </div>
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; font-size: 0.78rem; display: flex; justify-content: space-between;">
+            <div><strong>Rohan Sengupta</strong> &bull; Checked in at 7:02 AM</div>
+            <span style="color: var(--success); font-size: 0.7rem;"><i class="fas fa-check"></i> 14m GPS Verified</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Dues Tracker -->
+      <div id="admin-sec-dues" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <span style="font-size: 0.8rem; color: var(--text-muted);">November Dues (₹19/member):</span>
+          <button class="role-btn active" onclick="alert('Private notification broadcast sent to members with pending dues!')">
+            <i class="fas fa-paper-plane"></i> Send Dues Reminder
+          </button>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem;"><strong>Ananya Roy</strong> (Cinematography)</div>
+            <span style="color: var(--success); font-weight: 700; font-size: 0.75rem;">PAID ₹19 ✅</span>
+          </div>
+
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem;"><strong>Rohan Sengupta</strong> (Theatre Wing)</div>
+            <span style="color: var(--success); font-weight: 700; font-size: 0.75rem;">PAID ₹19 ✅</span>
+          </div>
+
+          <div style="background: var(--bg-card); padding: 0.6rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 0.78rem;"><strong>Suraj Oraon</strong> (Actor)</div>
+            <button class="role-btn" onclick="this.textContent='Reminded 🔔'; alert('Reminder sent to Suraj!');">Remind ₹19</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE POST SHEET (Members & Admins Only) -->
+    <div class="slide-drawer bottom-sheet" id="create-post-sheet">
+      <div class="sheet-header">
+        <h4 style="color: var(--accent-gold); font-size: 0.95rem;"><i class="fas fa-feather-alt"></i> JFTA Production Drop</h4>
+        <button style="background: transparent; border: none; color: #fff; font-size: 1.2rem;" onclick="closeAllDrawers()">✕</button>
+      </div>
+      <textarea style="width: 100%; height: 90px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px; padding: 0.7rem; color: #fff; margin-bottom: 0.8rem;" id="m-post-input" placeholder="Share film call sheets, rehearsal updates, or behind-the-scenes stills..."></textarea>
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <button class="role-btn" style="flex: 1; padding: 0.5rem;" onclick="alert('Cloudflare R2 Camera Picker ($0 Bandwidth)!')">
+          <i class="fas fa-camera"></i> Shoot Still
+        </button>
+        <button class="role-btn" style="flex: 1; padding: 0.5rem;" onclick="openReelCreator()">
+          <i class="fas fa-film" style="color: var(--accent-gold);"></i> Upload Reel
+        </button>
+      </div>
+      <button class="btn-action btn-gold" onclick="submitMobilePost()">Drop to JFTA Feed</button>
+    </div>
+
+    <!-- FIXED NATIVE MOBILE BOTTOM NAVIGATION -->
+    <nav class="mobile-tab-bar">
+      <!-- Studio Feed Tab -->
+      <button class="tab-item active" id="nav-tab-feed" onclick="switchMainTab('feed')">
+        <i class="fas fa-home"></i>
+        <span>Studio</span>
+      </button>
+
+      <!-- Reels Tab -->
+      <button class="tab-item" id="nav-tab-reels" onclick="switchMainTab('reels')">
+        <i class="fas fa-play-circle"></i>
+        <span>Reels</span>
+      </button>
+
+      <!-- Center Create (+) Button -->
+      <button class="tab-item" onclick="handleCenterAddBtn()" id="tab-create-btn">
+        <div class="tab-post-pill"><i class="fas fa-plus"></i></div>
+      </button>
+
+      <!-- Admin Tab (Exclusively visible to Admins & Super Admin) -->
+      <button class="tab-item" onclick="openAdminDesk()" id="tab-admin-item" style="display: none;">
+        <i class="fas fa-shield-alt"></i>
+        <span>Admin</span>
+      </button>
+
+      <!-- Member Dues Tab (Members & Admins Only) -->
+      <button class="tab-item" onclick="openMemberFeeDrawer()" id="tab-dues-item" style="display: none;">
+        <i class="fas fa-wallet"></i>
+        <span>JFTA Dues</span>
+      </button>
+    </nav>
+
+  </main>
+
+  <script>
+    // ==========================================================================
+    // MULTI-ADMIN & ROLE-BASED ACCESS CONTROL SYSTEM
+    // ==========================================================================
+    const SUPER_ADMIN_EMAIL = 'sarveshkaran99@gmail.com';
+
+    // Load admin emails from storage or initialize default
+    function getAdminEmails() {
+      const stored = localStorage.getItem('jfta_admin_emails');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e){}
+      }
+      return [SUPER_ADMIN_EMAIL];
+    }
+
+    function saveAdminEmails(list) {
+      localStorage.setItem('jfta_admin_emails', JSON.stringify(list));
+    }
+
+    // Load approved troupe members
+    function getApprovedMembers() {
+      const stored = localStorage.getItem('jfta_approved_members');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e){}
+      }
+      return [
+        { email: 'ananya@jfta.in', name: 'Ananya Roy', wing: 'FILM', discipline: 'Cinematographer' },
+        { email: 'rohan@jfta.in', name: 'Rohan Sengupta', wing: 'THEATRE', discipline: 'Director' }
+      ];
+    }
+
+    function saveApprovedMembers(list) {
+      localStorage.setItem('jfta_approved_members', JSON.stringify(list));
+    }
+
+    // Load pending applicants queue
+    function getPendingApplicants() {
+      const stored = localStorage.getItem('jfta_pending_applicants');
+      if (stored) {
+        try { return JSON.parse(stored); } catch(e){}
+      }
+      return [
+        { id: 'app-default-1', name: 'Suraj Oraon', email: 'suraj.oraon@gmail.com', wing: 'THEATRE', discipline: 'Lead Actor', batch: '2026' }
+      ];
+    }
+
+    function savePendingApplicants(list) {
+      localStorage.setItem('jfta_pending_applicants', JSON.stringify(list));
+    }
+
+    // Current Session State
+    let currentUser = null;
+    let userRole = 'public'; // 'super_admin' | 'admin' | 'member' | 'public'
+    let currentDistanceMeters = 8;
+    let activeTab = 'feed';
+
+    // Initialize User Session on Startup
+    function initUserSession() {
+      const savedUser = localStorage.getItem('jfta_current_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          evaluateUserRole(currentUser.email);
+          applyUserRoleUI();
+          document.getElementById('gateway-screen').classList.add('hidden');
+          return;
+        } catch(e) {}
+      }
+
+      // Default to Super Admin for seamless testing if no previous session
+      signInWithEmail(SUPER_ADMIN_EMAIL, 'Sarvesh Karan');
+    }
+
+    function evaluateUserRole(email) {
+      const normalized = email.toLowerCase().trim();
+      const adminList = getAdminEmails().map(e => e.toLowerCase().trim());
+      const approvedMembers = getApprovedMembers().map(m => m.email.toLowerCase().trim());
+
+      if (normalized === SUPER_ADMIN_EMAIL.toLowerCase()) {
+        userRole = 'super_admin';
+      } else if (adminList.includes(normalized)) {
+        userRole = 'admin';
+      } else if (approvedMembers.includes(normalized)) {
+        userRole = 'member';
+      } else {
+        userRole = 'public';
+      }
+    }
+
+    function applyUserRoleUI() {
+      const headerAdminBtn = document.getElementById('header-admin-btn');
+      const tabAdminItem = document.getElementById('tab-admin-item');
+      const tabDuesItem = document.getElementById('tab-dues-item');
+      const bellBtn = document.getElementById('header-bell-btn');
+      const gpsCard = document.getElementById('gps-checkin-section');
+      const publicBanner = document.getElementById('public-invite-banner');
+      const headerAvatar = document.getElementById('user-header-avatar');
+      const headerBadge = document.getElementById('user-header-badge');
+      const deleteButtons = document.querySelectorAll('.admin-delete-btn');
+
+      // Update Header Avatar & Role Badge
+      const initials = currentUser ? currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase() : 'SK';
+      headerAvatar.textContent = initials;
+
+      if (userRole === 'super_admin') {
+        headerBadge.textContent = 'Super Admin';
+        headerBadge.className = 'user-role-badge-pill badge-superadmin';
+      } else if (userRole === 'admin') {
+        headerBadge.textContent = 'Admin';
+        headerBadge.className = 'user-role-badge-pill badge-admin';
+      } else if (userRole === 'member') {
+        headerBadge.textContent = 'Troupe';
+        headerBadge.className = 'user-role-badge-pill badge-member';
+      } else {
+        headerBadge.textContent = 'Audience';
+        headerBadge.className = 'user-role-badge-pill badge-public';
+      }
+
+      // Role-Based Component Visibility
+      if (userRole === 'super_admin' || userRole === 'admin') {
+        headerAdminBtn.style.display = 'inline-block';
+        tabAdminItem.style.display = 'flex';
+        tabDuesItem.style.display = 'flex';
+        bellBtn.style.display = 'inline-block';
+        gpsCard.style.display = 'block';
+        publicBanner.style.display = 'none';
+        deleteButtons.forEach(b => b.style.display = 'inline-block');
+        updateAdminBadgeCount();
+        renderAdminLists();
+      } else if (userRole === 'member') {
+        headerAdminBtn.style.display = 'none';
+        tabAdminItem.style.display = 'none';
+        tabDuesItem.style.display = 'flex';
+        bellBtn.style.display = 'inline-block';
+        gpsCard.style.display = 'block';
+        publicBanner.style.display = 'none';
+        deleteButtons.forEach(b => b.style.display = 'none');
+      } else {
+        // Public Audience
+        headerAdminBtn.style.display = 'none';
+        tabAdminItem.style.display = 'none';
+        tabDuesItem.style.display = 'none';
+        bellBtn.style.display = 'none';
+        gpsCard.style.display = 'none';
+        publicBanner.style.display = 'flex';
+        deleteButtons.forEach(b => b.style.display = 'none');
+      }
+    }
+
+    // Google Sign-In Actions
+    function signInWithEmail(email, name) {
+      currentUser = {
+        email: email,
+        name: name || email.split('@')[0]
+      };
+      localStorage.setItem('jfta_current_user', JSON.stringify(currentUser));
+      evaluateUserRole(email);
+      applyUserRoleUI();
+
+      document.getElementById('gateway-screen').classList.add('hidden');
+      closeAllDrawers();
+    }
+
+    function openCustomGoogleAuth() {
+      const box = document.getElementById('custom-google-box');
+      box.style.display = (box.style.display === 'none') ? 'block' : 'none';
+    }
+
+    function submitCustomGoogleAuth() {
+      const emailInput = document.getElementById('custom-google-email').value.trim();
+      if (!emailInput || !emailInput.includes('@')) {
+        alert('Please enter a valid Google email address.');
+        return;
+      }
+      signInWithEmail(emailInput);
+    }
+
+    function signOutCurrentUser() {
+      localStorage.removeItem('jfta_current_user');
+      currentUser = null;
+      userRole = 'public';
+      closeAllDrawers();
+      document.getElementById('gateway-screen').classList.remove('hidden');
+    }
+
+    // USER PROFILE DRAWER
+    function openProfileDrawer() {
+      if (!currentUser) return;
+      document.getElementById('drawer-avatar').textContent = currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+      document.getElementById('drawer-user-name').textContent = currentUser.name;
+      document.getElementById('drawer-user-email').textContent = currentUser.email;
+
+      const badge = document.getElementById('drawer-role-badge');
+      const publicBox = document.getElementById('drawer-public-actions');
+
+      if (userRole === 'super_admin') {
+        badge.textContent = 'Super Administrator & Founder';
+        badge.className = 'user-role-badge-pill badge-superadmin';
+        publicBox.style.display = 'none';
+      } else if (userRole === 'admin') {
+        badge.textContent = 'JFTA Administrator (Full Access)';
+        badge.className = 'user-role-badge-pill badge-admin';
+        publicBox.style.display = 'none';
+      } else if (userRole === 'member') {
+        badge.textContent = 'Verified JFTA Troupe Member';
+        badge.className = 'user-role-badge-pill badge-member';
+        publicBox.style.display = 'none';
+      } else {
+        badge.textContent = 'Public Audience / Visitor';
+        badge.className = 'user-role-badge-pill badge-public';
+        publicBox.style.display = 'block';
+      }
+
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('profile-sheet').classList.add('open');
+    }
+
+    // ==========================================================================
+    // ADMIN DESK & APPLICANT APPROVALS & MULTI-ADMIN MANAGEMENT
+    // ==========================================================================
+    function updateAdminBadgeCount() {
+      const applicants = getPendingApplicants();
+      const badge1 = document.getElementById('admin-badge-indicator');
+      const badge2 = document.getElementById('tab-badge-approvals');
+      const textCount = document.getElementById('pending-count-text');
+
+      if (applicants.length > 0) {
+        if (badge1) badge1.style.display = 'block';
+        if (badge2) badge2.style.display = 'inline-block';
+        if (textCount) textCount.textContent = `${applicants.length} Request${applicants.length > 1 ? 's' : ''}`;
+      } else {
+        if (badge1) badge1.style.display = 'none';
+        if (badge2) badge2.style.display = 'none';
+        if (textCount) textCount.textContent = '0 Pending Requests';
+      }
+    }
+
+    function renderAdminLists() {
+      // 1. Render Applicants Queue
+      const queueContainer = document.getElementById('applicant-queue-list');
+      if (queueContainer) {
+        const applicants = getPendingApplicants();
+        queueContainer.innerHTML = '';
+
+        if (applicants.length === 0) {
+          queueContainer.innerHTML = `<div style="color: var(--text-muted); font-size: 0.78rem; padding: 1rem; text-align: center; background: var(--bg-card); border-radius: 10px;">No pending applicants at this time. All caught up! ✅</div>`;
+        } else {
+          applicants.forEach(app => {
+            const card = document.createElement('div');
+            card.style.cssText = 'background: rgba(245, 158, 11, 0.08); border: 1px solid var(--accent-gold); padding: 0.75rem; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;';
+            card.innerHTML = `
+              <div>
+                <strong style="color: #fff; font-size: 0.82rem;">${app.name}</strong>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">${app.email}</div>
+                <div style="font-size: 0.7rem; color: var(--accent-gold); margin-top: 0.2rem;">
+                  <i class="fas fa-theater-masks"></i> Wing: ${app.wing} &bull; ${app.discipline} (${app.batch || '2026'})
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.35rem;">
+                <button class="role-btn active" style="font-size: 0.7rem;" onclick="approveApplicant('${app.id}')">Approve</button>
+                <button class="btn-danger" style="font-size: 0.7rem; padding: 0.25rem 0.5rem; border-radius: 999px;" onclick="declineApplicant('${app.id}')">Decline</button>
+              </div>
+            `;
+            queueContainer.appendChild(card);
+          });
+        }
+      }
+
+      // 2. Render Authorized Admins List
+      const adminContainer = document.getElementById('admin-list-container');
+      if (adminContainer) {
+        const admins = getAdminEmails();
+        adminContainer.innerHTML = '';
+
+        admins.forEach(email => {
+          const isSuper = (email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
+          const card = document.createElement('div');
+          card.style.cssText = 'background: var(--bg-card); padding: 0.65rem 0.8rem; border-radius: 10px; display: flex; justify-content: space-between; align-items: center;';
+          card.innerHTML = `
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 700; color: #fff;">${email}</div>
+              <div style="font-size: 0.68rem; color: ${isSuper ? 'var(--accent-gold)' : '#38bdf8'};">
+                ${isSuper ? '<i class="fas fa-crown"></i> Super Admin (Owner)' : '<i class="fas fa-shield-alt"></i> Co-Administrator'}
+              </div>
+            </div>
+            ${isSuper ? '<span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">Permanent</span>' : `<button class="btn-danger" style="padding: 0.2rem 0.5rem; font-size: 0.7rem;" onclick="revokeCoAdmin('${email}')">Revoke</button>`}
+          `;
+          adminContainer.appendChild(card);
+        });
+
+        // Toggle add co-admin box (only Super Admin can add)
+        const addAdminBox = document.getElementById('superadmin-add-admin-box');
+        if (addAdminBox) {
+          addAdminBox.style.display = (userRole === 'super_admin') ? 'block' : 'none';
+        }
+      }
+    }
+
+    function approveApplicant(appId) {
+      let applicants = getPendingApplicants();
+      const applicant = applicants.find(a => a.id === appId);
+      if (!applicant) return;
+
+      // Add to approved members
+      let members = getApprovedMembers();
+      members.push({
+        email: applicant.email,
+        name: applicant.name,
+        wing: applicant.wing,
+        discipline: applicant.discipline
+      });
+      saveApprovedMembers(members);
+
+      // Remove from pending
+      applicants = applicants.filter(a => a.id !== appId);
+      savePendingApplicants(applicants);
+
+      updateAdminBadgeCount();
+      renderAdminLists();
+      alert(`✅ Approved!\n\n${applicant.name} (${applicant.email}) has been granted Troupe Member access.`);
+    }
+
+    function declineApplicant(appId) {
+      if (confirm('Decline this troupe application?')) {
+        let applicants = getPendingApplicants().filter(a => a.id !== appId);
+        savePendingApplicants(applicants);
+        updateAdminBadgeCount();
+        renderAdminLists();
+      }
+    }
+
+    function addCoAdmin() {
+      if (userRole !== 'super_admin') {
+        alert('Only the Super Admin (sarveshkaran99@gmail.com) can appoint co-administrators.');
+        return;
+      }
+
+      const input = document.getElementById('new-admin-email');
+      const email = input.value.trim().toLowerCase();
+
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid Google email address.');
+        return;
+      }
+
+      let admins = getAdminEmails();
+      if (admins.map(e => e.toLowerCase()).includes(email)) {
+        alert('This email is already an authorized administrator.');
+        return;
+      }
+
+      if (admins.length >= 5) {
+        alert('Maximum of 4 co-admins allowed to maintain strict platform security.');
+        return;
+      }
+
+      admins.push(email);
+      saveAdminEmails(admins);
+      input.value = '';
+      renderAdminLists();
+      alert(`Success! ${email} has been granted JFTA Administrator privileges.`);
+    }
+
+    function revokeCoAdmin(email) {
+      if (userRole !== 'super_admin') {
+        alert('Only the Super Admin can revoke co-administrators.');
+        return;
+      }
+
+      if (confirm(`Revoke administrator rights from ${email}?`)) {
+        let admins = getAdminEmails().filter(e => e.toLowerCase() !== email.toLowerCase());
+        saveAdminEmails(admins);
+        renderAdminLists();
+        alert(`Revoked administrator rights from ${email}.`);
+      }
+    }
+
+    function revokeMember(email, btnEl) {
+      if (confirm(`Revoke troupe member access for ${email}?`)) {
+        let members = getApprovedMembers().filter(m => m.email.toLowerCase() !== email.toLowerCase());
+        saveApprovedMembers(members);
+        btnEl.closest('div').remove();
+        alert(`Access revoked for ${email}. Their account has been reverted to Public Audience mode.`);
+      }
+    }
+
+    function switchAdminTab(key) {
+      ['approvals', 'admins', 'roster', 'attendance', 'dues'].forEach(t => {
+        const sec = document.getElementById(`admin-sec-${t}`);
+        const tab = document.getElementById(`atab-${t}`);
+        if (sec) sec.style.display = (t === key) ? 'block' : 'none';
+        if (tab) tab.className = (t === key) ? 'role-btn active' : 'role-btn';
+      });
+    }
+
+    // ==========================================================================
+    // ONBOARDING REQUEST SUBMISSION (Public -> Pending Troupe)
+    // ==========================================================================
+    let selectedWing = 'film';
+    function selectWing(wing) {
+      selectedWing = wing;
+      document.getElementById('wing-film').className = (wing === 'film') ? 'role-btn active' : 'role-btn';
+      document.getElementById('wing-theatre').className = (wing === 'theatre') ? 'role-btn active' : 'role-btn';
+    }
+
+    function openOnboardingSheet() {
+      closeAllDrawers();
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('onboarding-sheet').classList.add('open');
+    }
+
+    function submitMembershipRequest() {
+      const discipline = document.getElementById('member-discipline').value.trim() || 'Actor / Stage Crew';
+      const batch = document.getElementById('member-batch').value.trim() || '2026';
+      const email = currentUser ? currentUser.email : 'applicant@gmail.com';
+      const name = currentUser ? currentUser.name : 'Applicant';
+
+      const applicants = getPendingApplicants();
+      applicants.push({
+        id: 'app-' + Date.now(),
+        name: name,
+        email: email,
+        wing: selectedWing.toUpperCase(),
+        discipline: discipline,
+        batch: batch
+      });
+      savePendingApplicants(applicants);
+
+      closeAllDrawers();
+      updateAdminBadgeCount();
+
+      alert(`Application Submitted!\n\nWing: ${selectedWing.toUpperCase()}\nDiscipline: ${discipline}\n\nYour application has been queued for review by Sarvesh Karan (Super Admin). You will receive full access once approved.`);
+    }
+
+    // ==========================================================================
+    // REELS, FEED STREAM, PWA & GENERAL ACTIONS
+    // ==========================================================================
+    function switchMainTab(tab) {
+      activeTab = tab;
+      const feedSec = document.getElementById('view-feed-section');
+      const reelsSec = document.getElementById('view-reels-section');
+      const feedNav = document.getElementById('nav-tab-feed');
+      const reelsNav = document.getElementById('nav-tab-reels');
+
+      if (tab === 'feed') {
+        feedSec.style.display = 'block';
+        reelsSec.classList.remove('active');
+        feedNav.classList.add('active');
+        reelsNav.classList.remove('active');
+        document.querySelectorAll('.reel-video-element').forEach(v => v.pause());
+      } else {
+        feedSec.style.display = 'none';
+        reelsSec.classList.add('active');
+        feedNav.classList.remove('active');
+        reelsNav.classList.add('active');
+        const firstVideo = reelsSec.querySelector('.reel-video-element');
+        if (firstVideo) firstVideo.play().catch(e => console.log('Autoplay handled:', e));
+      }
+    }
+
+    function handleCenterAddBtn() {
+      if (userRole === 'public') {
+        alert('🔒 Action Restricted: Only approved JFTA Troupe Members can publish content or reels.\n\nPlease submit an application to join the troupe!');
+        openOnboardingSheet();
+        return;
+      }
+
+      if (activeTab === 'reels') {
+        openReelCreator();
+      } else {
+        openCreateSheet();
+      }
+    }
+
+    // Feed Refresh Simulation
+    let refreshCycle = 0;
+    const incomingMemberDrops = [
+      {
+        author: 'Ravi Kumar',
+        tag: 'Film Wing • Lighting Assistant',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
+        text: 'Just finished setting up the 1.2K HMI lights for night exterior shoot at Tagore Hill! Call time 7 PM.',
+        hashtags: '#JFTA #NightShoot #LightingCrew #Ranchi',
+        img: 'https://images.unsplash.com/photo-1518173946687-a4c8a383392e?w=900&auto=format&fit=crop&q=80',
+        likes: 31
+      },
+      {
+        author: 'Neha Tirkey',
+        tag: 'Theatre Repertory • Lead Cast',
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80',
+        text: 'Script draft 3 approved! Final character arcs for the Birsa Munda folk adaptation are locked in.',
+        hashtags: '#JFTAStage #RanchiTheatre #Scriptwriter',
+        img: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=900&auto=format&fit=crop&q=80',
+        likes: 47
+      }
+    ];
+
+    function refreshFeed() {
+      const icon = document.getElementById('refresh-icon');
+      const text = document.getElementById('refresh-text');
+      icon.classList.add('spinning');
+      text.textContent = 'Pulling Updates...';
+
+      setTimeout(() => {
+        icon.classList.remove('spinning');
+        text.textContent = 'Refresh Feed';
+
+        const drop = incomingMemberDrops[refreshCycle % incomingMemberDrops.length];
+        refreshCycle++;
+
+        const stream = document.getElementById('mobile-feed');
+        const card = document.createElement('article');
+        const id = 'post-m-refresh-' + Date.now();
+        card.className = 'mobile-post';
+        card.id = id;
+        card.innerHTML = `
+          <div class="post-author-row">
+            <div class="author-info-group">
+              <img src="${drop.avatar}" class="author-avatar" alt="${drop.author}">
+              <div>
+                <div class="author-title">${drop.author} <span style="font-size: 0.65rem; color: var(--success); font-weight: 700; margin-left: 0.2rem;">● Just Now</span></div>
+                <div class="author-tag"><i class="fas fa-check-circle"></i> ${drop.tag}</div>
+              </div>
+            </div>
+            <button class="btn-danger admin-delete-btn" style="display: ${(userRole === 'admin' || userRole === 'super_admin') ? 'inline-block' : 'none'}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem;" onclick="this.closest('.mobile-post').remove()">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+          <div class="post-media-box" ondblclick="triggerDoubleTap(this)">
+            <img src="${drop.img}" class="media-photo" alt="Production Still">
+            <i class="fas fa-heart double-tap-heart"></i>
+          </div>
+          <div class="post-actions-row">
+            <div class="actions-left">
+              <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+              <button class="action-icon" onclick="openCommentModal('${drop.author}')"><i class="far fa-comment"></i></button>
+              <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(drop.text)}" target="_blank" class="action-icon whatsapp-share-btn"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <button class="action-icon"><i class="far fa-bookmark"></i></button>
+          </div>
+          <div class="post-caption-box">
+            <div class="likes-tally"><span class="like-number">${drop.likes}</span> likes</div>
+            <div class="caption-text"><span>${drop.author.toLowerCase().replace(' ', '')}</span> ${drop.text}</div>
+            <div class="hashtags">${drop.hashtags}</div>
+          </div>
+        `;
+
+        stream.prepend(card);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        alert(`Feed Refreshed! 1 new backstage post from ${drop.author} has been stacked at the top.`);
+      }, 700);
+    }
+
+    // Reels Creation Logic with 60s Check & Client Compression
+    let validatedReelFile = null;
+    let reelDurationSec = 0;
+
+    function openReelCreator() {
+      if (userRole === 'public') {
+        alert('🔒 Action Restricted: Only approved JFTA Troupe Members can record and post Reels.');
+        openOnboardingSheet();
+        return;
+      }
+      closeAllDrawers();
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('reel-creator-sheet').classList.add('open');
+    }
+
+    function handleReelFileSelected(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      const banner = document.getElementById('compression-banner');
+      const bar = document.getElementById('compression-bar');
+      const pct = document.getElementById('compression-percent');
+      const stats = document.getElementById('compression-stats');
+
+      const tempVideo = document.createElement('video');
+      tempVideo.preload = 'metadata';
+      tempVideo.src = URL.createObjectURL(file);
+
+      tempVideo.onloadedmetadata = function() {
+        URL.revokeObjectURL(tempVideo.src);
+        const duration = Math.round(tempVideo.duration);
+        reelDurationSec = duration;
+
+        if (duration > 60) {
+          alert(`⚠️ Reel Exceeds 1-Minute Limit!\n\nDetected video duration: ${duration} seconds (${Math.floor(duration/60)}m ${duration%60}s).\n\nJFTA reels are limited to max 60s to protect cloud storage & bandwidth. Please trim your video and try again.`);
+          input.value = '';
+          banner.style.display = 'none';
+          validatedReelFile = null;
+          return;
+        }
+
+        validatedReelFile = file;
+        banner.style.display = 'block';
+        const originalSizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const targetSizeMB = (file.size / (1024 * 1024) * 0.16).toFixed(1);
+
+        let progress = 0;
+        bar.style.width = '0%';
+        pct.textContent = '0%';
+        stats.innerHTML = `<span>Original: <strong>${originalSizeMB} MB</strong> (${duration}s)</span><span>Targeting: <strong>${targetSizeMB} MB</strong></span>`;
+
+        const interval = setInterval(() => {
+          progress += 20;
+          bar.style.width = progress + '%';
+          pct.textContent = progress + '%';
+
+          if (progress >= 100) {
+            clearInterval(interval);
+            pct.textContent = 'Compressed ✅';
+            stats.innerHTML = `<span>Compressed: <strong style="color:var(--success)">${targetSizeMB} MB</strong></span><span style="color:var(--success)">Saved 84% Bandwidth!</span>`;
+          }
+        }, 120);
+      };
+    }
+
+    // ==========================================================================
+    // COMPREHENSIVE PHONETIC PROFANITY FILTER (HINDI & ENGLISH)
+    // Automatically stars out abusive words (e.g. c******, f***, b*******)
+    // ==========================================================================
+    const HINDI_ENGLISH_PROFANITY = [
+      // Hindi / Hinglish Transliterated terms
+      'chutiya', 'chutiye', 'chutya', 'chootiya', 'chutiyapa', 'chut', 'choot',
+      'madarchod', 'madarchodh', 'mc', 'maderchod', 'maadarchod', 'matarchod',
+      'bhenchod', 'behenchod', 'bc', 'bhenchodh', 'bhosdike', 'bhosdi', 'bhosdiwale', 'bhosad',
+      'gandu', 'gaand', 'gand', 'gaandu', 'gandfaad',
+      'harami', 'haraami', 'harramkhor', 'kamina', 'kamine', 'kaminey', 'kamini',
+      'saala', 'sala', 'saali', 'sali', 'sale',
+      'randi', 'raand', 'randwa',
+      'kutta', 'kutte', 'kuttiya', 'kutti',
+      'lodu', 'lauda', 'lawda', 'lund', 'lavda', 'laundiya',
+      'bhadwe', 'bhadwa', 'bhadve',
+      'chirkut', 'bakwas', 'jhantu', 'tatti', 'suar', 'hijra', 'bikhari',
+
+      // English Profanity & Vulgarities
+      'fuck', 'fucking', 'fucked', 'fucker', 'fucks', 'fuk', 'fck',
+      'shit', 'shitty', 'bullshit',
+      'asshole', 'ass', 'arse', 'arsehole',
+      'bitch', 'bitches', 'bitching',
+      'bastard', 'bastards',
+      'dick', 'dickhead', 'dicks',
+      'pussy', 'pussies',
+      'crap', 'damn', 'prick', 'slut', 'whore',
+      'idiot', 'stupid', 'moron', 'retard', 'scam', 'fraud'
+    ];
+
+    function censorProfanity(text) {
+      if (!text) return { text: '', wasMasked: false };
+      let censored = text;
+      let hasAbuse = false;
+
+      HINDI_ENGLISH_PROFANITY.forEach(word => {
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        if (regex.test(censored)) {
+          hasAbuse = true;
+          censored = censored.replace(regex, (match) => {
+            if (match.length <= 2) return '**';
+            return match[0] + '*'.repeat(match.length - 1);
+          });
+        }
+      });
+
+      return { text: censored, wasMasked: hasAbuse };
+    }
+
+    function sanitizeInput(str) {
+      return str.replace(/[&<>"']/g, function(m) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+      });
+    }
+
+    function submitNewReel() {
+      if (userRole === 'public') return;
+
+      const captionRaw = document.getElementById('reel-caption-input').value.trim();
+      const category = document.getElementById('reel-category').value;
+
+      // Automatically star out any abusive words (Hindi or English)
+      const filterResult = censorProfanity(captionRaw);
+      const caption = sanitizeInput(filterResult.text) || 'Rehearsal take at JFTA Studio.';
+      if (filterResult.wasMasked) {
+        alert('Notice: Inappropriate terms were automatically starred out (***) in your caption to comply with JFTA guidelines.');
+      }
+      const container = document.getElementById('view-reels-section');
+
+      const newReel = document.createElement('div');
+      newReel.className = 'reel-item';
+      newReel.id = 'reel-item-' + Date.now();
+      newReel.innerHTML = `
+        <video class="reel-video-element" loop playsinline autoplay muted poster="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&auto=format&fit=crop&q=80">
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-young-woman-acting-in-the-theater-40915-large.mp4" type="video/mp4">
+        </video>
+        <div class="reel-overlay-top">
+          <div class="reel-top-badge"><i class="fas fa-film"></i> ${category}</div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="reel-duration-badge"><i class="fas fa-stopwatch"></i> ${reelDurationSec ? reelDurationSec + 's' : '0:35'} / max 1:00</span>
+            <button class="reel-create-pill-btn" onclick="openReelCreator()"><i class="fas fa-plus"></i> Post Reel</button>
+          </div>
+        </div>
+        <div class="reel-overlay-right">
+          <button class="reel-action-btn" onclick="toggleReelLike(this)"><i class="fas fa-heart"></i><span class="reel-action-label like-count">1</span></button>
+          <button class="reel-action-btn" onclick="openCommentModal('${caption.substring(0, 20)}')"><i class="fas fa-comment-dots"></i><span class="reel-action-label">0</span></button>
+          <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(caption)}" target="_blank" class="reel-action-btn" style="text-decoration: none; color: #25d366;"><i class="fab fa-whatsapp"></i><span class="reel-action-label" style="color: #fff;">Share</span></a>
+          <button class="reel-action-btn" onclick="toggleReelAudio(this)"><i class="fas fa-volume-mute"></i><span class="reel-action-label">Sound</span></button>
+        </div>
+        <div class="reel-overlay-bottom">
+          <div class="reel-author-tag">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 0.75rem;">${currentUser ? currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2) : 'ME'}</div>
+            <span class="reel-author-name">${currentUser ? currentUser.name : 'You'}</span>
+            <span class="reel-wing-badge">${category}</span>
+          </div>
+          <div class="reel-caption">${caption}</div>
+          <div class="reel-audio-track"><i class="fas fa-music"></i> <span>Original Troupe Audio (Transcoded & Compressed)</span></div>
+        </div>
+      `;
+
+      container.prepend(newReel);
+      closeAllDrawers();
+
+      document.getElementById('reel-caption-input').value = '';
+      document.getElementById('reel-video-file').value = '';
+      document.getElementById('compression-banner').style.display = 'none';
+
+      switchMainTab('reels');
+      container.scrollTop = 0;
+      alert('Success! Your 1-minute reel has been compressed client-side and published to JFTA Reels feed.');
+    }
+
+    function toggleReelLike(btn) {
+      const countLabel = btn.querySelector('.like-count');
+      let count = parseInt(countLabel.textContent) || 0;
+      if (btn.classList.contains('liked')) {
+        btn.classList.remove('liked');
+        countLabel.textContent = Math.max(0, count - 1);
+      } else {
+        btn.classList.add('liked');
+        countLabel.textContent = count + 1;
+      }
+    }
+
+    function toggleReelAudio(btn) {
+      const reelItem = btn.closest('.reel-item');
+      const video = reelItem.querySelector('video');
+      const icon = btn.querySelector('i');
+      if (video.muted) {
+        video.muted = false;
+        icon.className = 'fas fa-volume-up';
+      } else {
+        video.muted = true;
+        icon.className = 'fas fa-volume-mute';
+      }
+    }
+
+    // Comments & Moderation
+    function openCommentModal(title) {
+      document.getElementById('comment-context-title').textContent = 'Comments on: ' + title;
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('comments-sheet').classList.add('open');
+    }
+
+    function postComment() {
+      const input = document.getElementById('comment-input-field');
+      const raw = input.value.trim();
+      if (!raw) return;
+
+      // Automatically star out abusive words (Hindi in English letters + English)
+      const filterResult = censorProfanity(raw);
+      const clean = sanitizeInput(filterResult.text);
+
+      const list = document.getElementById('comment-list');
+      const newComment = document.createElement('div');
+      newComment.style.cssText = 'background: var(--bg-card); padding: 0.6rem; border-radius: 8px; font-size: 0.8rem;';
+      newComment.innerHTML = `
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
+          <strong style="color: var(--accent-gold);">${currentUser ? currentUser.name : 'You'}</strong>
+          <span style="font-size: 0.68rem; color: var(--success);">Just now</span>
+        </div>
+        <div>${clean}</div>
+      `;
+      list.prepend(newComment);
+      input.value = '';
+
+      if (filterResult.wasMasked) {
+        alert('Notice: Inappropriate language was automatically starred out (***) to keep community critiques respectful.');
+      }
+    }
+
+    // GPS Geofence Attendance
+    function simulateGps(type) {
+      const pill = document.getElementById('geofence-pill');
+      const dist = document.getElementById('distance-text');
+      const btn = document.getElementById('attendance-submit-btn');
+
+      if (type === 'near') {
+        currentDistanceMeters = 8;
+        pill.className = 'gps-status-pill status-in-range';
+        pill.textContent = 'In Studio Range (8m)';
+        dist.innerHTML = 'Distance: <strong>8 meters</strong>';
+        btn.disabled = false;
+        btn.className = 'btn-action btn-gold';
+        btn.innerHTML = '<i class="fas fa-fingerprint"></i> Mark Film & Stage Attendance';
+      } else {
+        currentDistanceMeters = 3100;
+        pill.className = 'gps-status-pill status-out-range';
+        pill.textContent = 'Too Far (3.1 km away)';
+        dist.innerHTML = 'Distance: <strong style="color:var(--danger)">3,100 meters away</strong>';
+        btn.disabled = true;
+        btn.className = 'btn-action btn-danger';
+        btn.innerHTML = '<i class="fas fa-lock"></i> Locked: You are not at JFTA Studio';
+      }
+    }
+
+    function markAttendance() {
+      if (currentDistanceMeters > 20) {
+        alert('Attendance Locked! You must be within 10–20 meters of JFTA Studio.');
+        return;
+      }
+      const btn = document.getElementById('attendance-submit-btn');
+      btn.className = 'btn-action btn-success';
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Attendance Verified: Present at JFTA Studio!';
+      alert('Success! Your attendance has been GPS-verified and logged for today.');
+    }
+
+    function markDuesPaid() {
+      document.getElementById('dues-status-label').innerHTML = '<span style="color:var(--success)">PAID ✅</span>';
+      alert('Thank you! Your ₹19 maintenance dues for JFTA have been verified.');
+      closeAllDrawers();
+    }
+
+    function openMemberFeeDrawer() {
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('member-fee-sheet').classList.add('open');
+    }
+
+    function openCreateSheet() {
+      if (userRole === 'public') {
+        alert('Production Drops are reserved for verified JFTA Members.');
+        openOnboardingSheet();
+        return;
+      }
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('create-post-sheet').classList.add('open');
+    }
+
+    function openAdminDesk() {
+      if (userRole !== 'super_admin' && userRole !== 'admin') {
+        alert('Access Denied: JFTA Command Desk is restricted to authorized administrators.');
+        return;
+      }
+      renderAdminLists();
+      document.getElementById('sheet-overlay').classList.add('show');
+      document.getElementById('admin-drawer').classList.add('open');
+    }
+
+    function closeAllDrawers() {
+      document.getElementById('sheet-overlay').classList.remove('show');
+      document.getElementById('create-post-sheet').classList.remove('open');
+      document.getElementById('admin-drawer').classList.remove('open');
+      document.getElementById('member-fee-sheet').classList.remove('open');
+      document.getElementById('onboarding-sheet').classList.remove('open');
+      document.getElementById('reel-creator-sheet').classList.remove('open');
+      document.getElementById('comments-sheet').classList.remove('open');
+      document.getElementById('profile-sheet').classList.remove('open');
+    }
+
+    function toggleLike(btn) {
+      const heart = btn.querySelector('i');
+      const post = btn.closest('.mobile-post');
+      const tally = post.querySelector('.like-number');
+      let count = parseInt(tally.textContent);
+
+      if (heart.classList.contains('far')) {
+        heart.className = 'fas fa-heart';
+        btn.classList.add('liked');
+        tally.textContent = count + 1;
+      } else {
+        heart.className = 'far fa-heart';
+        btn.classList.remove('liked');
+        tally.textContent = count - 1;
+      }
+    }
+
+    function triggerDoubleTap(mediaBox) {
+      const heart = mediaBox.querySelector('.double-tap-heart');
+      const post = mediaBox.closest('.mobile-post');
+      const likeBtn = post.querySelector('.action-icon');
+
+      heart.classList.add('animate');
+      setTimeout(() => heart.classList.remove('animate'), 700);
+
+      const heartIcon = likeBtn.querySelector('i');
+      if (heartIcon.classList.contains('far')) {
+        toggleLike(likeBtn);
+      }
+    }
+
+    function submitMobilePost() {
+      const txtRaw = document.getElementById('m-post-input').value.trim();
+      if (!txtRaw) return;
+
+      // Automatically star out abusive words (Hindi in English letters + English)
+      const filterResult = censorProfanity(txtRaw);
+      const txt = sanitizeInput(filterResult.text);
+      if (filterResult.wasMasked) {
+        alert('Notice: Inappropriate terms were automatically starred out (***) in your post.');
+      }
+      const stream = document.getElementById('mobile-feed');
+      const card = document.createElement('article');
+      const id = 'post-m-' + Date.now();
+      card.className = 'mobile-post';
+      card.id = id;
+      card.innerHTML = `
+        <div class="post-author-row">
+          <div class="author-info-group">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000;">
+              ${currentUser ? currentUser.name.split(' ').map(n=>n[0]).join('').substring(0,2) : 'ME'}
+            </div>
+            <div>
+              <div class="author-title">${currentUser ? currentUser.name : 'You'} <span style="font-size: 0.65rem; color: var(--success); font-weight: 700; margin-left: 0.2rem;">● Just Now</span></div>
+              <div class="author-tag"><i class="fas fa-check-circle"></i> Verified JFTA Member</div>
+            </div>
+          </div>
+          <button class="btn-danger admin-delete-btn" style="display: ${(userRole === 'admin' || userRole === 'super_admin') ? 'inline-block' : 'none'}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem;" onclick="this.closest('.mobile-post').remove()">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+        </div>
+        <div class="post-caption-box" style="padding-top: 0.5rem;">
+          <div class="caption-text">${txt}</div>
+        </div>
+        <div class="post-actions-row">
+          <div class="actions-left">
+            <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+            <button class="action-icon" onclick="openCommentModal('Your Update')"><i class="far fa-comment"></i></button>
+            <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(txt)}" target="_blank" class="action-icon whatsapp-share-btn"><i class="fab fa-whatsapp"></i></a>
+          </div>
+        </div>
+      `;
+      stream.prepend(card);
+      document.getElementById('m-post-input').value = '';
+      closeAllDrawers();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deletePost(id) {
+      if (confirm('Admin: Delete this post permanently?')) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+      }
+    }
+
+    // PWA Service Worker & Install Prompt
+    let deferredPrompt;
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW error:', err));
+      });
+    }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('pwa-install-btn');
+      if (installBtn) installBtn.style.display = 'inline-flex';
+    });
+
+    function triggerPwaInstall() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+          document.getElementById('pwa-install-btn').style.display = 'none';
+          deferredPrompt = null;
+        });
+      } else {
+        alert('To install on iPhone: Tap Safari Share ➔ "Add to Home Screen". On Android: Tap browser menu (⋮) ➔ "Install App"!');
+      }
+    }
+
+    // Boot system on load
+    window.addEventListener('DOMContentLoaded', initUserSession);
+  </script>
+</body>
+</html>
