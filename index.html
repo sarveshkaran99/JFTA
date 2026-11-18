@@ -1907,11 +1907,16 @@
         if (error) {
           console.error('Google SSO Error:', error);
           if (error.message && error.message.toLowerCase().includes('provider is not enabled')) {
-            const tempLogin = confirm('⚙️ Supabase Setup Step Needed:\n\nGoogle OAuth provider is currently toggled OFF in your Supabase dashboard.\n\nTo enable it permanently:\n1. Open Supabase Dashboard ➔ Authentication ➔ Providers ➔ Google\n2. Toggle ON and add your Google Client ID & Secret.\n\nWould you like to temporarily enter the app as Sarvesh Karan (Super Admin) for testing while you complete the setup?');
-            if (tempLogin) {
+            const enteredEmail = prompt(
+              '⚙️ Supabase Notice: Google OAuth provider is currently toggled OFF in your Supabase Dashboard.\n\nTo enable it permanently:\nSupabase Dashboard ➔ Authentication ➔ Providers ➔ Google (Toggle ON and add Client ID & Secret).\n\nFor instant testing across your devices right now, enter your Google account email:',
+              SUPER_ADMIN_EMAIL
+            );
+            if (enteredEmail && enteredEmail.includes('@')) {
+              const cleanEmail = enteredEmail.trim();
+              const isSuper = (cleanEmail.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
               handleAuthenticatedUser({
-                email: SUPER_ADMIN_EMAIL,
-                user_metadata: { full_name: 'Sarvesh Karan' }
+                email: cleanEmail,
+                user_metadata: { full_name: isSuper ? 'Sarvesh Karan' : cleanEmail.split('@')[0] }
               });
               await loadFeedPosts();
               await loadAllReels();
