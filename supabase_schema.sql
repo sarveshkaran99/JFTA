@@ -206,3 +206,31 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+
+-- ==============================================================================
+-- 9. SUPABASE STORAGE BUCKET FOR 1-MINUTE VERTICAL REELS
+-- ==============================================================================
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'reels',
+  'reels',
+  true,
+  52428800, -- 50 MB
+  ARRAY['video/mp4', 'video/quicktime', 'video/webm', 'video/x-m4v']
+)
+ON CONFLICT (id) DO UPDATE SET
+  public = true,
+  file_size_limit = 52428800;
+
+-- Storage RLS Policies for Reels Video Streaming & Uploads
+DROP POLICY IF EXISTS "Public View Reels" ON storage.objects;
+CREATE POLICY "Public View Reels" ON storage.objects
+  FOR SELECT USING (bucket_id = 'reels');
+
+DROP POLICY IF EXISTS "Public Upload Reels" ON storage.objects;
+CREATE POLICY "Public Upload Reels" ON storage.objects
+  FOR INSERT WITH CHECK (bucket_id = 'reels');
+
+DROP POLICY IF EXISTS "Public Update Reels" ON storage.objects;
+CREATE POLICY "Public Update Reels" ON storage.objects
+  FOR UPDATE USING (bucket_id = 'reels');

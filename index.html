@@ -151,44 +151,31 @@
       margin-bottom: 1.8rem;
     }
 
-    .btn-google {
+    .btn-google-sso {
       width: 100%;
       background: #ffffff;
       color: #1f2937;
-      border: none;
-      border-radius: 14px;
-      padding: 0.85rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 999px;
+      padding: 0.85rem 1.2rem;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.75rem;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      margin-bottom: 0.85rem;
-      transition: transform 0.15s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.35);
+      transition: all 0.2s ease;
     }
-    .btn-google:active { transform: scale(0.98); }
-
-    .btn-superadmin-quick {
-      width: 100%;
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid var(--accent-gold);
-      color: var(--accent-gold);
-      border-radius: 14px;
-      padding: 0.75rem 1rem;
-      font-weight: 700;
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      cursor: pointer;
-      margin-bottom: 0.8rem;
-      transition: background 0.2s ease;
+    .btn-google-sso:hover {
+      background: #f8fafc;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
     }
-    .btn-superadmin-quick:hover { background: rgba(245, 158, 11, 0.25); }
+    .btn-google-sso:active {
+      transform: scale(0.98);
+    }
 
     .btn-guest {
       width: 100%;
@@ -826,29 +813,17 @@
         Ranchi's premiere cinema and stage collective. Please sign in with your Google account to explore productions, watch 1-minute reels, or access troupe backstage tools.
       </p>
 
-      <!-- 1-Tap Quick Sign-In for Super Admin -->
-      <button class="btn-superadmin-quick" onclick="signInWithEmail('sarveshkaran99@gmail.com', 'Sarvesh Karan')">
-        <i class="fas fa-shield-alt"></i> Sign in as Sarvesh Karan (Super Admin)
-      </button>
-
-      <!-- Standard Google OAuth Trigger -->
-      <button class="btn-google" onclick="openCustomGoogleAuth()">
-        <svg width="18" height="18" viewBox="0 0 24 24">
-          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-        </svg>
-        Sign in with another Google Account
-      </button>
-
-      <!-- Custom Email Input (Hidden by default, shown when choosing custom) -->
-      <div id="custom-google-box" style="display: none; margin-top: 0.8rem; text-align: left;">
-        <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">Google Email Address:</label>
-        <div style="display: flex; gap: 0.4rem;">
-          <input type="email" id="custom-google-email" placeholder="e.g. audience.fan@gmail.com" class="comment-input" style="flex: 1; border-radius: 10px; padding: 0.55rem; font-size: 0.8rem;">
-          <button class="role-btn active" style="padding: 0 0.8rem;" onclick="submitCustomGoogleAuth()">Sign In</button>
-        </div>
+      <!-- Official Google SSO Trigger with Account Selection -->
+      <div style="margin-top: 1.5rem; margin-bottom: 0.5rem;">
+        <button class="btn-google-sso" id="btn-google-sso" onclick="signInWithGoogleSSO()">
+          <svg width="20" height="20" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
       </div>
 
       <div style="font-size: 0.72rem; color: var(--text-subtle); margin-top: 1rem;">
@@ -1615,26 +1590,24 @@
           const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
           if (!error && data) {
             cloudPosts = data;
+          } else if (error) {
+            console.warn('Load posts error:', error);
           }
-        } catch(e) {}
+        } catch(e) {
+          console.warn('Load posts exception:', e);
+        }
       }
 
       const map = new Map();
-      localPosts.forEach(p => map.set(p.id, p));
-      cloudPosts.forEach(p => {
+      cloudPosts.forEach(p => map.set(p.id, p));
+      localPosts.forEach(p => {
         if (!map.has(p.id)) {
-          map.set(p.id, {
-            id: p.id,
-            author_name: p.author_name,
-            author_tag: p.author_tag,
-            text: p.text,
-            likes_count: p.likes_count || 0,
-            created_at: p.created_at
-          });
+          map.set(p.id, p);
         }
       });
 
       const list = Array.from(map.values()).sort((a,b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      saveUserPosts(list);
       renderPostsList(list);
     }
 
@@ -1788,17 +1761,45 @@
 
     // Initialize User Session on Startup
     async function initUserSession() {
-      const savedUser = localStorage.getItem('jfta_current_user');
-      if (savedUser) {
+      // 1. Check if Supabase has an active OAuth session (from Google redirect or stored session)
+      if (db) {
         try {
-          currentUser = JSON.parse(savedUser);
-          evaluateUserRole(currentUser.email);
-          applyUserRoleUI();
-          document.getElementById('gateway-screen').classList.add('hidden');
-        } catch(e) {}
-      } else {
-        // Default to Super Admin for seamless testing if no previous session
-        signInWithEmail(SUPER_ADMIN_EMAIL, 'Sarvesh Karan');
+          const { data: { session } } = await db.auth.getSession();
+          if (session && session.user) {
+            handleAuthenticatedUser(session.user);
+          }
+        } catch(e) {
+          console.warn('Supabase getSession check note:', e);
+        }
+
+        // Listen for OAuth sign-in event from redirect
+        db.auth.onAuthStateChange(async (event, session) => {
+          if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session && session.user) {
+            handleAuthenticatedUser(session.user);
+            await loadFeedPosts();
+            await loadAllReels();
+          } else if (event === 'SIGNED_OUT') {
+            handleUserSignedOut();
+          }
+        });
+      }
+
+      // 2. Check if a previously authenticated user exists in localStorage
+      if (!currentUser) {
+        const savedUser = localStorage.getItem('jfta_current_user');
+        if (savedUser) {
+          try {
+            currentUser = JSON.parse(savedUser);
+            evaluateUserRole(currentUser.email);
+            applyUserRoleUI();
+            const gateway = document.getElementById('gateway-screen');
+            if (gateway) gateway.classList.add('hidden');
+          } catch(e) {}
+        } else {
+          // Keep gateway screen visible! NEVER auto-login as Super Admin!
+          const gateway = document.getElementById('gateway-screen');
+          if (gateway) gateway.classList.remove('hidden');
+        }
       }
 
       // Load Real User Posts and Reels
@@ -1886,43 +1887,71 @@
       }
     }
 
-    // Google Sign-In Actions
-    function signInWithEmail(email, name) {
+    // Google SSO Authentication (Official Google OAuth with native account selection)
+    async function signInWithGoogleSSO() {
+      if (!db) {
+        alert('Supabase client is initializing. Please wait a moment and try again.');
+        return;
+      }
+      try {
+        const { data, error } = await db.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin + window.location.pathname,
+            queryParams: {
+              prompt: 'select_account',
+              access_type: 'offline'
+            }
+          }
+        });
+        if (error) {
+          console.error('Google SSO Error:', error);
+          alert('Google Sign-In notice: ' + error.message + '\n\nPlease ensure Google OAuth provider is enabled in your Supabase Dashboard (Authentication -> Providers -> Google).');
+        }
+      } catch (err) {
+        console.error('SSO Exception:', err);
+        alert('Google Sign-In failed: ' + err.message);
+      }
+    }
+
+    function handleAuthenticatedUser(user) {
+      if (!user) return;
+      const email = user.email || '';
+      const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0];
+      const avatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || '';
+
       currentUser = {
         email: email,
-        name: name || email.split('@')[0]
+        name: name,
+        avatar: avatar
       };
       localStorage.setItem('jfta_current_user', JSON.stringify(currentUser));
       evaluateUserRole(email);
       applyUserRoleUI();
 
-      document.getElementById('gateway-screen').classList.add('hidden');
+      const gateway = document.getElementById('gateway-screen');
+      if (gateway) gateway.classList.add('hidden');
       closeAllDrawers();
 
       // Trigger cloud sync for profile
-      syncUserProfileToCloud(email, currentUser.name);
+      syncUserProfileToCloud(email, name);
     }
 
-    function openCustomGoogleAuth() {
-      const box = document.getElementById('custom-google-box');
-      box.style.display = (box.style.display === 'none') ? 'block' : 'none';
-    }
-
-    function submitCustomGoogleAuth() {
-      const emailInput = document.getElementById('custom-google-email').value.trim();
-      if (!emailInput || !emailInput.includes('@')) {
-        alert('Please enter a valid Google email address.');
-        return;
-      }
-      signInWithEmail(emailInput);
-    }
-
-    function signOutCurrentUser() {
+    function handleUserSignedOut() {
       localStorage.removeItem('jfta_current_user');
       currentUser = null;
       userRole = 'public';
+      applyUserRoleUI();
       closeAllDrawers();
-      document.getElementById('gateway-screen').classList.remove('hidden');
+      const gateway = document.getElementById('gateway-screen');
+      if (gateway) gateway.classList.remove('hidden');
+    }
+
+    async function signOutCurrentUser() {
+      if (db) {
+        try { await db.auth.signOut(); } catch(e) {}
+      }
+      handleUserSignedOut();
     }
 
     // USER PROFILE DRAWER
@@ -2398,8 +2427,20 @@
       });
     }
 
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = err => reject(err);
+        reader.readAsDataURL(file);
+      });
+    }
+
     async function submitNewReel() {
-      if (userRole === 'public') return;
+      if (userRole === 'public') {
+        alert('Public visitors cannot post reels. Please apply to join the troupe or sign in with an approved account.');
+        return;
+      }
 
       const file = validatedReelFile;
       const captionRaw = document.getElementById('reel-caption-input').value.trim();
@@ -2417,16 +2458,86 @@
         alert('Notice: Inappropriate terms were automatically starred out (***) in your caption to comply with JFTA guidelines.');
       }
 
-      const reelId = 'reel-' + Date.now();
+      const btn = document.getElementById('btn-publish-reel');
+      const origBtnHtml = btn ? btn.innerHTML : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading to JFTA Cloud...';
+      }
+
       const authorName = currentUser ? currentUser.name : 'Troupe Artist';
       const authorWing = (currentUser && currentUser.wing) ? currentUser.wing : category;
 
-      // 1. Store Binary Video Blob in IndexedDB (Guarantees local persistence on refresh!)
+      let cloudVideoUrl = null;
+
+      // 1. Upload Video Binary to Supabase Storage (so all devices & members can stream)
+      if (db && db.storage) {
+        try {
+          const fileExt = file.name ? file.name.split('.').pop() : 'mp4';
+          const filePath = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+
+          const { data: uploadData, error: uploadError } = await db.storage
+            .from('reels')
+            .upload(filePath, file, {
+              contentType: file.type || 'video/mp4',
+              cacheControl: '3600',
+              upsert: true
+            });
+
+          if (!uploadError && uploadData) {
+            const { data: publicUrlData } = db.storage.from('reels').getPublicUrl(filePath);
+            if (publicUrlData && publicUrlData.publicUrl) {
+              cloudVideoUrl = publicUrlData.publicUrl;
+            }
+          } else {
+            console.warn('Supabase storage upload note:', uploadError);
+          }
+        } catch(err) {
+          console.warn('Supabase storage upload exception:', err);
+        }
+      }
+
+      // 2. Resilient Cloud Fallback: Convert to Base64 data URL if storage bucket is not yet active
+      if (!cloudVideoUrl) {
+        try {
+          cloudVideoUrl = await fileToBase64(file);
+        } catch(err) {
+          console.warn('Base64 conversion note:', err);
+        }
+      }
+
+      // 3. Sync to Supabase Cloud Database Table with Cloud Video URL
+      let cloudReelId = null;
+      if (db && cloudVideoUrl) {
+        try {
+          const { data, error } = await db.from('reels').insert([{
+            author_name: authorName,
+            author_wing: authorWing,
+            video_url: cloudVideoUrl,
+            caption: caption,
+            category: category,
+            duration_sec: reelDurationSec || 30,
+            likes_count: 0
+          }]).select();
+
+          if (!error && data && data.length > 0) {
+            cloudReelId = data[0].id;
+          } else if (error) {
+            console.error('Supabase reel insert error:', error);
+          }
+        } catch(e) {
+          console.warn('Supabase reel sync exception:', e);
+        }
+      }
+
+      // 4. Store in local IndexedDB for instant 0ms playback on uploader's device
+      const localId = cloudReelId || ('reel-' + Date.now());
       const reelObj = {
-        id: reelId,
+        id: localId,
         author_name: authorName,
         author_wing: authorWing,
         video_blob: file,
+        video_url: cloudVideoUrl,
         caption: caption,
         category: category,
         duration_sec: reelDurationSec || 30,
@@ -2435,24 +2546,11 @@
       };
       await saveReelToIndexedDB(reelObj);
 
-      // 2. Sync to Supabase Cloud
-      if (db) {
-        try {
-          db.from('reels').insert([{
-            author_name: authorName,
-            author_wing: authorWing,
-            video_url: 'local_indexeddb',
-            caption: caption,
-            category: category,
-            duration_sec: reelDurationSec || 30,
-            likes_count: 0
-          }]).then();
-        } catch(e) {
-          console.warn('Supabase reel sync note:', e);
-        }
-      }
-
       // Clean up inputs and close drawers
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = origBtnHtml;
+      }
       document.getElementById('reel-caption-input').value = '';
       document.getElementById('reel-video-file').value = '';
       validatedReelFile = null;
@@ -2464,7 +2562,7 @@
       const container = document.getElementById('view-reels-section');
       if (container) container.scrollTop = 0;
 
-      alert('✅ Reel Published!\n\nYour 1-minute reel has been published to JFTA Reels feed.');
+      alert('✅ Reel Published!\n\nYour 1-minute reel has been published to JFTA Cloud and is now visible to all troupe members.');
     }
 
     function toggleReelLike(btn) {
@@ -2667,7 +2765,7 @@
       }
     }
 
-    function submitMobilePost() {
+    async function submitMobilePost() {
       const txtRaw = document.getElementById('m-post-input').value.trim();
       if (!txtRaw) return;
 
@@ -2678,29 +2776,46 @@
         alert('Notice: Inappropriate terms were automatically starred out (***) in your post.');
       }
 
-      const postId = 'post-' + Date.now();
       const authorName = currentUser ? currentUser.name : 'Troupe Member';
       const authorTag = (userRole === 'super_admin' ? 'Super Admin' : (userRole === 'admin' ? 'Co-Admin' : 'Verified JFTA Member'));
 
-      const newPost = {
-        id: postId,
+      const postPayload = {
         author_name: authorName,
         author_tag: authorTag,
         text: txt,
-        likes_count: 0,
-        created_at: new Date().toISOString()
+        likes_count: 0
       };
 
-      // 1. Save to localStorage (Instant Persistence)
-      const posts = getUserPosts();
-      posts.unshift(newPost);
-      saveUserPosts(posts);
+      let savedPost = null;
 
-      // 2. Sync to Supabase Cloud
+      // 1. Insert directly into Supabase Cloud with automatic UUID generation
       if (db) {
         try {
-          db.from('posts').insert([newPost]).then();
-        } catch(e) {}
+          const { data, error } = await db.from('posts').insert([postPayload]).select();
+          if (!error && data && data.length > 0) {
+            savedPost = data[0];
+          } else if (error) {
+            console.error('Supabase post insert error:', error);
+          }
+        } catch(e) {
+          console.warn('Supabase post insert exception:', e);
+        }
+      }
+
+      // Fallback if offline
+      if (!savedPost) {
+        savedPost = {
+          id: 'post-' + Date.now(),
+          ...postPayload,
+          created_at: new Date().toISOString()
+        };
+      }
+
+      // 2. Save to localStorage cache
+      const posts = getUserPosts();
+      if (!posts.some(p => p.id === savedPost.id)) {
+        posts.unshift(savedPost);
+        saveUserPosts(posts);
       }
 
       document.getElementById('m-post-input').value = '';
