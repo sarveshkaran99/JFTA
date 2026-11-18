@@ -22,7 +22,7 @@ END $$;
 
 -- 3. Profiles Table (Holds members, applicants, and admins)
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   full_name TEXT NOT NULL,
   avatar_url TEXT,
@@ -34,29 +34,31 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+ALTER TABLE public.profiles ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- 4. Authorized Administrators Whitelist
 CREATE TABLE IF NOT EXISTS public.admin_whitelist (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   email TEXT UNIQUE NOT NULL,
   assigned_by TEXT NOT NULL,
   role_tier TEXT DEFAULT 'admin' NOT NULL CHECK (role_tier IN ('super_admin', 'admin')),
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+ALTER TABLE public.admin_whitelist ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- Seed Sarvesh Karan as permanent Super Admin
-INSERT INTO public.admin_whitelist (email, assigned_by, role_tier)
-VALUES ('sarveshkaran99@gmail.com', 'system_root', 'super_admin')
+INSERT INTO public.admin_whitelist (id, email, assigned_by, role_tier)
+VALUES (gen_random_uuid(), 'sarveshkaran99@gmail.com', 'system_root', 'super_admin')
 ON CONFLICT (email) DO NOTHING;
 
 -- Seed Super Admin Profile
-INSERT INTO public.profiles (email, full_name, role, member_status, wing, discipline, batch)
-VALUES ('sarveshkaran99@gmail.com', 'Sarvesh Karan', 'super_admin', 'approved', 'FILM', 'Founder & Director', '2026')
+INSERT INTO public.profiles (id, email, full_name, role, member_status, wing, discipline, batch)
+VALUES (gen_random_uuid(), 'sarveshkaran99@gmail.com', 'Sarvesh Karan', 'super_admin', 'approved', 'FILM', 'Founder & Director', '2026')
 ON CONFLICT (email) DO UPDATE SET role = 'super_admin', member_status = 'approved';
 
 -- 5. Reels Table (Max 60 Seconds Enforced)
 CREATE TABLE IF NOT EXISTS public.reels (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   author_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   author_name TEXT NOT NULL,
   author_wing TEXT NOT NULL,
@@ -67,10 +69,11 @@ CREATE TABLE IF NOT EXISTS public.reels (
   likes_count INTEGER DEFAULT 0 NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+ALTER TABLE public.reels ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- 6. Backstage Community Posts Table
 CREATE TABLE IF NOT EXISTS public.posts (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   author_name TEXT NOT NULL,
   author_tag TEXT NOT NULL,
   author_avatar TEXT,
@@ -80,10 +83,11 @@ CREATE TABLE IF NOT EXISTS public.posts (
   likes_count INTEGER DEFAULT 0 NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+ALTER TABLE public.posts ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- 7. GPS Geofenced Rehearsal Attendance
 CREATE TABLE IF NOT EXISTS public.attendance_logs (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   user_name TEXT NOT NULL,
   venue TEXT DEFAULT 'JFTA Studio, Ranchi' NOT NULL,
@@ -91,10 +95,11 @@ CREATE TABLE IF NOT EXISTS public.attendance_logs (
   verified BOOLEAN DEFAULT TRUE NOT NULL,
   checked_in_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+ALTER TABLE public.attendance_logs ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- 8. Private Member Dues Tracker (₹19/mo)
 CREATE TABLE IF NOT EXISTS public.member_dues (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
   user_email TEXT,
   month_year TEXT NOT NULL, -- e.g. "November 2026"
@@ -103,6 +108,7 @@ CREATE TABLE IF NOT EXISTS public.member_dues (
   upi_ref TEXT,
   paid_at TIMESTAMPTZ
 );
+ALTER TABLE public.member_dues ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- ==============================================================================
 -- ROW-LEVEL SECURITY (RLS) POLICIES
