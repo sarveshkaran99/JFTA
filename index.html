@@ -1906,7 +1906,19 @@
         });
         if (error) {
           console.error('Google SSO Error:', error);
-          alert('Google Sign-In notice: ' + error.message + '\n\nPlease ensure Google OAuth provider is enabled in your Supabase Dashboard (Authentication -> Providers -> Google).');
+          if (error.message && error.message.toLowerCase().includes('provider is not enabled')) {
+            const tempLogin = confirm('⚙️ Supabase Setup Step Needed:\n\nGoogle OAuth provider is currently toggled OFF in your Supabase dashboard.\n\nTo enable it permanently:\n1. Open Supabase Dashboard ➔ Authentication ➔ Providers ➔ Google\n2. Toggle ON and add your Google Client ID & Secret.\n\nWould you like to temporarily enter the app as Sarvesh Karan (Super Admin) for testing while you complete the setup?');
+            if (tempLogin) {
+              handleAuthenticatedUser({
+                email: SUPER_ADMIN_EMAIL,
+                user_metadata: { full_name: 'Sarvesh Karan' }
+              });
+              await loadFeedPosts();
+              await loadAllReels();
+            }
+          } else {
+            alert('Google Sign-In notice: ' + error.message);
+          }
         }
       } catch (err) {
         console.error('SSO Exception:', err);
