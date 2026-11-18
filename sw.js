@@ -1,5 +1,5 @@
-// JFTA PWA Service Worker - v2 (Network-First with Auto-Cache Purge)
-const CACHE_NAME = 'jfta-cache-v2';
+// JFTA PWA Service Worker - v3 (Supabase Cloud Sync & Auto-Cache Purge)
+const CACHE_NAME = 'jfta-cache-v3';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

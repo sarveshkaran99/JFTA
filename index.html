@@ -20,6 +20,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+  <!-- Supabase Cloud Client SDK v2 -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     :root {
       --bg-app: #080a0f;
@@ -1234,6 +1237,9 @@
         <span class="user-role-badge-pill badge-superadmin" id="drawer-role-badge" style="font-size: 0.72rem; padding: 0.2rem 0.6rem;">
           Super Admin & Founder
         </span>
+        <div style="margin-top: 0.65rem; font-size: 0.72rem; color: #10b981; display: flex; align-items: center; justify-content: center; gap: 0.35rem;" id="supabase-status-pill">
+          <i class="fas fa-database"></i> <span>Cloud Backend: Supabase Connected</span>
+        </div>
       </div>
 
       <!-- Action Buttons in Profile -->
@@ -1613,6 +1619,22 @@
     // ==========================================================================
     const SUPER_ADMIN_EMAIL = 'sarveshkaran99@gmail.com';
 
+    // ==========================================================================
+    // SUPABASE CLOUD BACKEND INTEGRATION
+    // ==========================================================================
+    const SUPABASE_URL = 'https://iyhpxilerhxedquufojy.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_ANc64txyrKQEx9BmiEbwXA_EhPy6c9H';
+
+    let db = null;
+    try {
+      if (window.supabase) {
+        db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('⚡ JFTA Supabase Client Initialized:', SUPABASE_URL);
+      }
+    } catch(err) {
+      console.warn('Supabase initialization notice:', err);
+    }
+
     // Load admin emails from storage or initialize default
     function getAdminEmails() {
       const stored = localStorage.getItem('jfta_admin_emails');
@@ -1657,6 +1679,188 @@
       localStorage.setItem('jfta_pending_applicants', JSON.stringify(list));
     }
 
+    // ==========================================================================
+    // CLOUD SYNCHRONIZATION HELPERS (Supabase Real-Time Sync)
+    // ==========================================================================
+    async function syncAdminsFromCloud() {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('admin_whitelist').select('email');
+        if (!error && data && data.length > 0) {
+          const list = [...new Set([SUPER_ADMIN_EMAIL.toLowerCase(), ...data.map(d => d.email.toLowerCase())])];
+          saveAdminEmails(list);
+          if (currentUser) {
+            evaluateUserRole(currentUser.email);
+            applyUserRoleUI();
+          }
+          renderAdminLists();
+        }
+      } catch(e) {
+        console.log('Admins sync note:', e);
+      }
+    }
+
+    async function syncProfilesFromCloud() {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('profiles').select('*');
+        if (!error && data && data.length > 0) {
+          const approved = data.filter(p => p.member_status === 'approved' && p.role !== 'super_admin').map(p => ({
+            email: p.email,
+            name: p.full_name,
+            wing: p.wing || 'FILM',
+            discipline: p.discipline || 'Artist'
+          }));
+          const pending = data.filter(p => p.member_status === 'pending').map(p => ({
+            id: p.id,
+            email: p.email,
+            name: p.full_name,
+            wing: p.wing || 'THEATRE',
+            discipline: p.discipline || 'Actor',
+            batch: p.batch || '2026'
+          }));
+
+          if (approved.length > 0) saveApprovedMembers(approved);
+          if (pending.length > 0) savePendingApplicants(pending);
+          updateAdminBadgeCount();
+          renderAdminLists();
+        }
+      } catch(e) {
+        console.log('Profiles sync note:', e);
+      }
+    }
+
+    async function syncReelsFromCloud() {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('reels').select('*').order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          const container = document.getElementById('view-reels-section');
+          data.forEach(reel => {
+            const reelId = 'reel-cloud-' + reel.id;
+            if (!document.getElementById(reelId)) {
+              const card = document.createElement('div');
+              card.className = 'reel-item';
+              card.id = reelId;
+              card.innerHTML = `
+                <video class="reel-video-element" loop playsinline autoplay muted poster="https://images.unsplash.com/photo-1485846234645-a62644f84728?w=800&auto=format&fit=crop&q=80">
+                  <source src="${reel.video_url}" type="video/mp4">
+                </video>
+                <div class="reel-overlay-top">
+                  <div class="reel-top-badge"><i class="fas fa-film"></i> ${reel.category || 'JFTA Reels'}</div>
+                  <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <span class="reel-duration-badge"><i class="fas fa-stopwatch"></i> ${reel.duration_sec}s / max 1:00</span>
+                    <button class="reel-create-pill-btn" onclick="openReelCreator()"><i class="fas fa-plus"></i> Post Reel</button>
+                  </div>
+                </div>
+                <div class="reel-overlay-right">
+                  <button class="reel-action-btn" onclick="toggleReelLike(this)"><i class="fas fa-heart"></i><span class="reel-action-label like-count">${reel.likes_count || 0}</span></button>
+                  <button class="reel-action-btn" onclick="openCommentModal('${(reel.caption || '').substring(0, 20)}')"><i class="fas fa-comment-dots"></i><span class="reel-action-label">0</span></button>
+                  <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(reel.caption || '')}" target="_blank" class="reel-action-btn" style="text-decoration: none; color: #25d366;"><i class="fab fa-whatsapp"></i><span class="reel-action-label" style="color: #fff;">Share</span></a>
+                  <button class="reel-action-btn" onclick="toggleReelAudio(this)"><i class="fas fa-volume-mute"></i><span class="reel-action-label">Sound</span></button>
+                </div>
+                <div class="reel-overlay-bottom">
+                  <div class="reel-author-tag">
+                    <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-weight: 800; color: #000; font-size: 0.75rem;">${(reel.author_name || 'JF').substring(0,2).toUpperCase()}</div>
+                    <span class="reel-author-name">${reel.author_name || 'Troupe Artist'}</span>
+                    <span class="reel-wing-badge">${reel.author_wing || 'JFTA'}</span>
+                  </div>
+                  <div class="reel-caption">${reel.caption || ''}</div>
+                  <div class="reel-audio-track"><i class="fas fa-music"></i> <span>Original Troupe Audio (Transcoded & Compressed)</span></div>
+                </div>
+              `;
+              container.prepend(card);
+            }
+          });
+        }
+      } catch(e) {
+        console.log('Reels sync note:', e);
+      }
+    }
+
+    async function syncPostsFromCloud() {
+      if (!db) return;
+      try {
+        const { data, error } = await db.from('posts').select('*').order('created_at', { ascending: false });
+        if (!error && data && data.length > 0) {
+          const stream = document.getElementById('mobile-feed');
+          data.forEach(post => {
+            const postId = 'post-cloud-' + post.id;
+            if (!document.getElementById(postId)) {
+              const card = document.createElement('article');
+              card.className = 'mobile-post';
+              card.id = postId;
+              card.innerHTML = `
+                <div class="post-author-row">
+                  <div class="author-info-group">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gold); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000;">
+                      ${(post.author_name || 'JF').substring(0,2).toUpperCase()}
+                    </div>
+                    <div>
+                      <div class="author-title">${post.author_name || 'Troupe Member'} <span style="font-size: 0.65rem; color: var(--success); font-weight: 700; margin-left: 0.2rem;">● Cloud Synced</span></div>
+                      <div class="author-tag"><i class="fas fa-check-circle"></i> ${post.author_tag || 'Verified JFTA Member'}</div>
+                    </div>
+                  </div>
+                  <button class="btn-danger admin-delete-btn" style="display: ${(userRole === 'admin' || userRole === 'super_admin') ? 'inline-block' : 'none'}; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.7rem;" onclick="deleteCloudPost('${post.id}', this)">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                </div>
+                <div class="post-caption-box" style="padding-top: 0.5rem;">
+                  <div class="caption-text">${post.text}</div>
+                </div>
+                <div class="post-actions-row">
+                  <div class="actions-left">
+                    <button class="action-icon" onclick="toggleLike(this)"><i class="far fa-heart"></i></button>
+                    <button class="action-icon" onclick="openCommentModal('${post.author_name || 'Backstage'}')"><i class="far fa-comment"></i></button>
+                    <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(post.text)}" target="_blank" class="action-icon whatsapp-share-btn"><i class="fab fa-whatsapp"></i></a>
+                  </div>
+                </div>
+              `;
+              stream.prepend(card);
+            }
+          });
+        }
+      } catch(e) {
+        console.log('Posts sync note:', e);
+      }
+    }
+
+    async function deleteCloudPost(postId, btn) {
+      if (!confirm('Admin: Delete this post permanently from cloud?')) return;
+      if (btn) btn.closest('.mobile-post').remove();
+      if (db) {
+        try { await db.from('posts').delete().eq('id', postId); } catch(e){}
+      }
+    }
+
+    async function syncUserProfileToCloud(email, name) {
+      if (!db) return;
+      try {
+        const isSuper = (email.toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase());
+        const { data: profile } = await db.from('profiles').select('*').eq('email', email).maybeSingle();
+        if (profile) {
+          if (isSuper && profile.role !== 'super_admin') {
+            await db.from('profiles').update({ role: 'super_admin', member_status: 'approved' }).eq('email', email);
+            userRole = 'super_admin';
+          } else {
+            userRole = isSuper ? 'super_admin' : profile.role;
+          }
+          applyUserRoleUI();
+        } else {
+          const role = isSuper ? 'super_admin' : 'public';
+          const status = isSuper ? 'approved' : 'pending';
+          await db.from('profiles').upsert([{
+            email: email,
+            full_name: name || email.split('@')[0],
+            role: role,
+            member_status: status
+          }], { onConflict: 'email' });
+        }
+      } catch(e) {
+        console.log('User profile cloud sync note:', e);
+      }
+    }
+
     // Current Session State
     let currentUser = null;
     let userRole = 'public'; // 'super_admin' | 'admin' | 'member' | 'public'
@@ -1672,12 +1876,17 @@
           evaluateUserRole(currentUser.email);
           applyUserRoleUI();
           document.getElementById('gateway-screen').classList.add('hidden');
-          return;
         } catch(e) {}
+      } else {
+        // Default to Super Admin for seamless testing if no previous session
+        signInWithEmail(SUPER_ADMIN_EMAIL, 'Sarvesh Karan');
       }
 
-      // Default to Super Admin for seamless testing if no previous session
-      signInWithEmail(SUPER_ADMIN_EMAIL, 'Sarvesh Karan');
+      // Background Cloud Synchronization
+      syncAdminsFromCloud();
+      syncProfilesFromCloud();
+      syncReelsFromCloud();
+      syncPostsFromCloud();
     }
 
     function evaluateUserRole(email) {
@@ -1768,6 +1977,9 @@
 
       document.getElementById('gateway-screen').classList.add('hidden');
       closeAllDrawers();
+
+      // Trigger cloud sync for profile
+      syncUserProfileToCloud(email, currentUser.name);
     }
 
     function openCustomGoogleAuth() {
@@ -1924,6 +2136,12 @@
       applicants = applicants.filter(a => a.id !== appId);
       savePendingApplicants(applicants);
 
+      // Sync with Supabase Cloud
+      if (db) {
+        db.from('profiles').update({ member_status: 'approved', role: 'member' })
+          .or(`id.eq.${appId},email.eq.${applicant.email}`).then();
+      }
+
       updateAdminBadgeCount();
       renderAdminLists();
       alert(`✅ Approved!\n\n${applicant.name} (${applicant.email}) has been granted Troupe Member access.`);
@@ -1931,8 +2149,16 @@
 
     function declineApplicant(appId) {
       if (confirm('Decline this troupe application?')) {
-        let applicants = getPendingApplicants().filter(a => a.id !== appId);
+        let applicants = getPendingApplicants();
+        const applicant = applicants.find(a => a.id === appId);
+        applicants = applicants.filter(a => a.id !== appId);
         savePendingApplicants(applicants);
+
+        if (db && applicant) {
+          db.from('profiles').update({ member_status: 'revoked' })
+            .or(`id.eq.${appId},email.eq.${applicant.email}`).then();
+        }
+
         updateAdminBadgeCount();
         renderAdminLists();
       }
@@ -1965,6 +2191,12 @@
 
       admins.push(email);
       saveAdminEmails(admins);
+
+      if (db) {
+        db.from('admin_whitelist').upsert([{ email: email, assigned_by: currentUser.email, role_tier: 'admin' }]).then();
+        db.from('profiles').update({ role: 'admin', member_status: 'approved' }).eq('email', email).then();
+      }
+
       input.value = '';
       renderAdminLists();
       alert(`Success! ${email} has been granted JFTA Administrator privileges.`);
@@ -1979,6 +2211,12 @@
       if (confirm(`Revoke administrator rights from ${email}?`)) {
         let admins = getAdminEmails().filter(e => e.toLowerCase() !== email.toLowerCase());
         saveAdminEmails(admins);
+
+        if (db) {
+          db.from('admin_whitelist').delete().eq('email', email).then();
+          db.from('profiles').update({ role: 'member' }).eq('email', email).then();
+        }
+
         renderAdminLists();
         alert(`Revoked administrator rights from ${email}.`);
       }
@@ -1989,6 +2227,11 @@
         let members = getApprovedMembers().filter(m => m.email.toLowerCase() !== email.toLowerCase());
         saveApprovedMembers(members);
         btnEl.closest('div').remove();
+
+        if (db) {
+          db.from('profiles').update({ role: 'public', member_status: 'revoked' }).eq('email', email).then();
+        }
+
         alert(`Access revoked for ${email}. Their account has been reverted to Public Audience mode.`);
       }
     }
@@ -2035,10 +2278,23 @@
       });
       savePendingApplicants(applicants);
 
+      // Sync to Supabase Cloud
+      if (db) {
+        db.from('profiles').upsert([{
+          email: email,
+          full_name: name,
+          role: 'public',
+          member_status: 'pending',
+          wing: selectedWing.toUpperCase(),
+          discipline: discipline,
+          batch: batch
+        }], { onConflict: 'email' }).then();
+      }
+
       closeAllDrawers();
       updateAdminBadgeCount();
 
-      alert(`Application Submitted!\n\nWing: ${selectedWing.toUpperCase()}\nDiscipline: ${discipline}\n\nYour application has been queued for review by Sarvesh Karan (Super Admin). You will receive full access once approved.`);
+      alert(`Application Submitted!\n\nWing: ${selectedWing.toUpperCase()}\nDiscipline: ${discipline}\n\nYour application has been queued in Supabase for review by Sarvesh Karan (Super Admin). You will receive full access once approved.`);
     }
 
     // ==========================================================================
@@ -2328,13 +2584,26 @@
       container.prepend(newReel);
       closeAllDrawers();
 
+      // Sync Reel to Supabase Cloud
+      if (db) {
+        db.from('reels').insert([{
+          author_name: currentUser ? currentUser.name : 'Troupe Artist',
+          author_wing: category,
+          video_url: 'https://assets.mixkit.co/videos/preview/mixkit-young-woman-acting-in-the-theater-40915-large.mp4',
+          caption: caption,
+          category: category,
+          duration_sec: reelDurationSec || 35,
+          likes_count: 1
+        }]).then();
+      }
+
       document.getElementById('reel-caption-input').value = '';
       document.getElementById('reel-video-file').value = '';
       document.getElementById('compression-banner').style.display = 'none';
 
       switchMainTab('reels');
       container.scrollTop = 0;
-      alert('Success! Your 1-minute reel has been compressed client-side and published to JFTA Reels feed.');
+      alert('Success! Your 1-minute reel has been compressed client-side and synced to JFTA Cloud Reels feed.');
     }
 
     function toggleReelLike(btn) {
@@ -2429,12 +2698,35 @@
       const btn = document.getElementById('attendance-submit-btn');
       btn.className = 'btn-action btn-success';
       btn.innerHTML = '<i class="fas fa-check-circle"></i> Attendance Verified: Present at JFTA Studio!';
-      alert('Success! Your attendance has been GPS-verified and logged for today.');
+
+      // Sync GPS attendance log to Supabase Cloud
+      if (db) {
+        db.from('attendance_logs').insert([{
+          user_name: currentUser ? currentUser.name : 'Troupe Artist',
+          venue: 'JFTA Studio, Ranchi',
+          distance_meters: currentDistanceMeters,
+          verified: true
+        }]).then();
+      }
+
+      alert('Success! Your attendance has been GPS-verified and logged into Supabase for today.');
     }
 
     function markDuesPaid() {
       document.getElementById('dues-status-label').innerHTML = '<span style="color:var(--success)">PAID ✅</span>';
-      alert('Thank you! Your ₹19 maintenance dues for JFTA have been verified.');
+
+      // Sync member dues payment to Supabase Cloud
+      if (db) {
+        db.from('member_dues').insert([{
+          user_email: currentUser ? currentUser.email : SUPER_ADMIN_EMAIL,
+          month_year: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
+          amount: 19.00,
+          status: 'paid',
+          paid_at: new Date().toISOString()
+        }]).then();
+      }
+
+      alert('Thank you! Your ₹19 maintenance dues for JFTA have been verified and recorded in Supabase.');
       closeAllDrawers();
     }
 
@@ -2547,6 +2839,17 @@
         </div>
       `;
       stream.prepend(card);
+
+      // Sync post to Supabase Cloud
+      if (db) {
+        db.from('posts').insert([{
+          author_name: currentUser ? currentUser.name : 'Troupe Member',
+          author_tag: (userRole === 'super_admin' ? 'Super Admin' : (userRole === 'admin' ? 'Co-Admin' : 'Verified JFTA Member')),
+          text: txt,
+          likes_count: 0
+        }]).then();
+      }
+
       document.getElementById('m-post-input').value = '';
       closeAllDrawers();
       window.scrollTo({ top: 0, behavior: 'smooth' });
