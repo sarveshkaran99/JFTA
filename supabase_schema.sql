@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
+-- Remove foreign key constraint to auth.users if it was created by Supabase template
+ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_id_fkey;
 ALTER TABLE public.profiles ALTER COLUMN id SET DEFAULT gen_random_uuid();
 
 -- 4. Authorized Administrators Whitelist
